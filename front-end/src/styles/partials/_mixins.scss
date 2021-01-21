@@ -1,0 +1,29 @@
+@import './variables';
+
+@mixin tablet-adapt {
+    @media screen and (min-width: 768px) {
+      @content;
+    }
+  }
+  
+  @mixin desktop-adapt {
+    @media screen and (min-width: 1200px) {
+      @content;
+    }
+  }
+
+// Typography
+
+// Layout
+@mixin margin-control{
+    margin-left: $marginMobile;
+    margin-right: $marginTablet;
+    @include tablet-adapt {
+        margin-left: $marginTablet;
+        margin-right: $marginTablet;
+    }
+    @include desktop-adapt {
+        margin-left: $marginDesktop;
+        margin-right: $marginDesktop;
+    }
+}
