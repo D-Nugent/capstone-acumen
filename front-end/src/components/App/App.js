@@ -14,11 +14,13 @@ import NewEnv from '../../pages/NewEnv/NewEnv';
 import ModifyEnv from '../../pages/ModifyEnv/ModifyEnv';
 import CandidateReel from '../../pages/CandidateReel/CandidateReel';
 import CandidateProfile from '../../pages/CandidateProfile/CandidateProfile';
+import AcumenLogo from '../../assets/logos/acumenLogoSmall.svg'
 
 class App extends React.Component {
   render() {
     return (
       <div className="app">
+        <img src={AcumenLogo} alt="logo" className="logo"/>
         <TopNav/>
         <SideNav/>
         <Switch>
