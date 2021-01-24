@@ -1,1 +1,9 @@
 @import '../../styles/global';
+
+.sidenav{
+    background-color: $themeSlatePrimary;
+    height: 60vh;
+    width: 1vw;
+    border-radius: 16px;
+    margin: 0 5vw;
+}

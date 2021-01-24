@@ -1,4 +1,13 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import {
+    IfFirebaseAuthed,
+    IfFirebaseUnAuthed
+} from "@react-firebase/auth";
+import firebase from "firebase/app";
+import "firebase/auth";
+import 'firebase/firestore';
+import AcumenLogo from '../../assets/logos/acumenLogoSmall.svg';
+import './TopNav.scss';
 
 export class TopNav extends Component {
     render() {
