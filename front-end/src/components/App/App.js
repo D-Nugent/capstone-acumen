@@ -1,11 +1,21 @@
 import {Switch, Route} from 'react-router-dom'
 import React from 'react';
+// -------
+import {
+  FirebaseAuthProvider,
+  IfFirebaseAuthed,
+  IfFirebaseUnAuthed
+} from "@react-firebase/auth";
+import firebase from "firebase/app";
+import "firebase/auth";
+import 'firebase/firestore';
+import {config} from "../../firebase-credentials.ts";
+// ------
 import TopNav from '../TopNav/TopNav';
 import SideNav from '../SideNav/SideNav';
 import Landing from '../../pages/Landing/Landing';
 import Home from '../../pages/Home/Home';
 import Register from '../../pages/Register/Register';
-import './App.scss';
 import ModifyProfile from '../../pages/ModifyProfile/ModifyProfile';
 import UserProfile from '../../pages/UserProfile/UserProfile';
 import NewVideo from '../../pages/NewVideo/NewVideo';
@@ -14,35 +24,53 @@ import NewEnv from '../../pages/NewEnv/NewEnv';
 import ModifyEnv from '../../pages/ModifyEnv/ModifyEnv';
 import CandidateReel from '../../pages/CandidateReel/CandidateReel';
 import CandidateProfile from '../../pages/CandidateProfile/CandidateProfile';
-import AcumenLogo from '../../assets/logos/acumenLogoSmall.svg'
+import './App.scss';
+
 
 class App extends React.Component {
+  state = {
+    isLoading: false,
+    error: null
+  }
   render() {
     return (
       <div className="app">
-        <img src={AcumenLogo} alt="logo" className="logo"/>
-        <TopNav/>
-        <SideNav/>
-        <Switch>
-          <Route exact path="/" render={(routeProps) => <Landing {...routeProps} />} />
-          <Route exact path="/home" render={(routeProps) => <Home {...routeProps} />} />
-          <Route exact path="/register" render={(routeProps) => <Register {...routeProps} />} />
+        <FirebaseAuthProvider {...config} firebase={firebase}>
+          <TopNav className="app__topnav"/>
+          <main className="app__main">
+            <SideNav/>
+            <IfFirebaseAuthed>
+              <Switch>
+                <Route exact path="/" render={(routeProps) => <Landing {...routeProps} />} />
+                <Route exact path="/user/:userid/createProfile" render={(routeProps) => <ModifyProfile {...routeProps} />} />
+                <Route exact path="/user/:userid/editProfile" render={(routeProps) => <ModifyProfile {...routeProps} />} />
+                <Route exact path="/user/:userid/newVideo" render={(routeProps) => <NewVideo {...routeProps} />} />
+                <Route exact path="/user/:userid/:videoid" render={(routeProps) => <ViewVideo {...routeProps} />} />
+              
+                <Route exact path="/business/:businessid/createProfile" render={(routeProps) => <ModifyProfile {...routeProps} />} />
+                <Route exact path="/business/:businessid/editProfile" render={(routeProps) => <ModifyProfile {...routeProps} />} />
+                <Route exact path="/business/:businessid/newEnv" render={(routeProps) => <NewEnv {...routeProps} />} />
 
-          <Route exact path="/:userid" render={(routeProps) => <UserProfile {...routeProps} />} />
-          <Route exact path="/:userid/createProfile" render={(routeProps) => <ModifyProfile {...routeProps} />} />
-          <Route exact path="/:userid/editProfile" render={(routeProps) => <ModifyProfile {...routeProps} />} />
-          <Route exact path="/:userid/newVideo" render={(routeProps) => <NewVideo {...routeProps} />} />
-          <Route exact path="/:userid/:videoid" render={(routeProps) => <ViewVideo {...routeProps} />} />
-
-
-          <Route exact path="/:businessid" render={(routeProps) => <UserProfile {...routeProps} />} />
-          <Route exact path="/:businessid/createProfile" render={(routeProps) => <ModifyProfile {...routeProps} />} />
-          <Route exact path="/:businessid/editProfile" render={(routeProps) => <ModifyProfile {...routeProps} />} />
-          <Route exact path="/:businessid/newEnv" render={(routeProps) => <NewEnv {...routeProps} />} />
-          <Route exact path="/:businessid/:envId" render={(routeProps) => <ModifyEnv {...routeProps} />} />
-          <Route exact path="/:businessid/:envId/candidates" render={(routeProps) => <CandidateReel {...routeProps} />} />
-          <Route exact path="/:businessid/:envId/candidates/:userid" render={(routeProps) => <CandidateProfile {...routeProps} />} />
-        </Switch>
+                <Route exact path="/business/:businessid/:envId/candidates" render={(routeProps) => <CandidateReel {...routeProps} />} />
+                <Route exact path="/business/:businessid/:envId/candidates/:userid" render={(routeProps) => <CandidateProfile {...routeProps} />} />
+              </Switch>
+            </IfFirebaseAuthed>
+            {/* ------------------------------------------------------ */}
+            <IfFirebaseUnAuthed>
+              <Switch>
+                <Route exact path="/" render={(routeProps) => <Landing {...routeProps} />} />
+                <Route exact path="/register" render={(routeProps) => <Register {...routeProps} />} />
+              </Switch>
+            </IfFirebaseUnAuthed>
+            {/* ------------------------------------------------------ */}
+            <Switch>
+              <Route exact path="/home" render={(routeProps) => <Home {...routeProps} />} />
+              <Route exact path="/user/:userid" render={(routeProps) => <UserProfile {...routeProps} />} />
+              <Route exact path="/business/:businessid" render={(routeProps) => <UserProfile {...routeProps} />} />
+              <Route exact path="/business/:businessid/:envId" render={(routeProps) => <ModifyEnv {...routeProps} />} />    
+            </Switch>
+          </main>
+        </FirebaseAuthProvider>
       </div>
     );
   }
