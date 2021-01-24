@@ -1,1 +1,18 @@
 @import '../../styles/global';
+
+.topnav{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    background-color: $themeSlatePrimary;
+    height: 5vh;
+
+    &__signout{
+        margin: 0 4px;
+    }
+    &__signin{
+        & > button {
+            margin: 0 4px;
+        }
+    }
+}

@@ -1,1 +1,12 @@
 @import '../../styles/global';
+
+.app{
+    &__topnav{
+
+    }
+    &__main{
+        display: flex;
+        height: 95vh;
+        align-items: center;
+    }
+}
