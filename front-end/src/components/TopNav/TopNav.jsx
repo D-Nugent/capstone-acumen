@@ -1,62 +1,51 @@
 import React, { Component } from 'react';
 import {fireAuth, fireDB} from '../../firebase';
 import firebase from 'firebase/app';
+import SignInModal from '../SignInModal/SignInModal';
 import AcumenLogo from '../../assets/logos/acumenLogoSmall.svg';
 import './TopNav.scss';
 
 export class TopNav extends Component {
+    state = {
+        loginModal: false,
+    }
 
-    registerUser = (event) => {
-        event.preventDefault();
-        const userEmail = event.target.regEmail.value;
-        const userPass = event.target.regPass.value;
-        fireAuth.createUserWithEmailAndPassword(userEmail, userPass)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            console.log(user);
+    loginModalClose = (isNewUser) => {
+        this.setState({
+            loginModal: false,
+            newUser: isNewUser,
         })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.mesage;
-            console.log(errorCode, errorMessage);
+    }
+
+    userSignOut = () => {
+        fireAuth.signOut().then(()=>{
+            console.log("User has been signed Out");
+            this.props.processSignOut()
+            console.log(this.props.userData);
+            console.log(this.props.user);
+            console.log(fireAuth.currentUser);
+        }).catch((error) => {
+            console.error(error);
         })
     }
 
     render() {
+        console.log(this.props);
+        console.log(this.state);
         return (
             <div className="topnav">
                 <img src={AcumenLogo} alt="logo" className="topnav__logo"/>
-                    <button className="topnav__signout" onClick={async () => {
-                        this.setState({isLoading: true});
-                        await firebase.app().auth().signOut();
-                        this.setState({isLoading: false})}}>
-                        Sign out
-                    </button>
-                    <div className="topnav__signin">
-                        <button className="topnav__signin-anon" onClick={async () => {
-                            await firebase.app().auth().signInAnonymously();
-                            this.setState({isLoading: false});
-                            }}>
-                            Sign in anonymously
-                            </button>
-                        <button className="topnav__signin-google" onClick={async() => {
-                            try {
-                                this.setState({isLoading:true, error: null});
-                                const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-                                await firebase.auth().signInWithPopup(googleAuthProvider);
-                                this.setState({isLoading: false, error: null});
-                            } catch (error) {
-                                this.setState({isLoading: false, error: error});
-                            }
-                        }}>
-                        Sign in with Google
-                        </button>
-                        <form className="topnav__signin-email" onSubmit={(event)=>{this.registerUser(event)}}>
-                            <input type="email" className="topnav__signin-email-efield" id="regEmail" required/>
-                            <input type="password" className="topnav__signin-email-pfield" id ="regPass" required/>
-                            <button type="submit" className="topnav__sigin-email-submit">Register</button>
-                        </form>
-                    </div> 
+                <h4 className="topnav__heading">Hi there
+                {!!this.props.userData && <span className="topnav__user"> {this.props.userData.firstName}</span>}!
+                 {!!this.props.userData? this.state.newUser===true?" Welcome to Acumen!":" It's great to see you again!":" To get started please sign in"}</h4>
+                
+                {fireAuth.currentUser === null?
+                    <button className="topnav__auth-control" onClick={()=>{this.setState({loginModal:true,})}}>SIGN IN</button>
+                :
+                    <button className="topnav__auth-control" onClick={()=>{this.userSignOut()}}>SIGN OUT</button>
+                }
+                
+                {this.state.loginModal===true && <SignInModal loginModalClose={this.loginModalClose}/>}
             </div>
         )
     }

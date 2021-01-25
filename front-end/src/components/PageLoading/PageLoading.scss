@@ -1,0 +1,33 @@
+@import '../../styles/global';
+
+@keyframes spin {
+    0% { transform: rotate(0deg) scale(1, 1); }
+    50% { transform: rotate(180deg) scale(1.25, 1.25); }
+    100% { transform: rotate(360deg) scale(1, 1); }
+  }
+
+.loading {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: $themeSlatePrimary;
+
+  &__text{
+    color: $themeSlateOffsetPrimary
+  }
+
+    &__animation {
+            border: 24px solid $themeSlateContrastSecondary;
+            border-top: 24px solid $themeSlateContrastTertiary;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+    }
+}
+

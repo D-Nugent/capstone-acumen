@@ -6,17 +6,26 @@
     align-items: center;
     background-color: $themeSlatePrimary;
     height: 5vh;
+    position: relative;
 
-    &__signout{
-        margin: 0 4px;
+    &__heading{
+        color: $themeSlateOffsetPrimary;
     }
-    &__signin{
-        width: 100%;
-        display: flex;
-        justify-content: space-evenly;
 
-        & > button {
-            margin: 0 4px;
+    &__user{
+        color: $themeSlateContrastTertiary;
+    }
+
+    &__auth-control{
+        background-color: $themeSlateContrastTertiary;
+        border-color: $themeSlateContrastTertiary;
+        color: $themeSlateOffsetPrimary;
+        font-family: "Raleway";
+        border-radius: 4px;
+        margin-left: 16px;
+
+        &:hover{
+            cursor: pointer;
         }
     }
 }
