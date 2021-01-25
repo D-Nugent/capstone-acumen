@@ -1,20 +1,8 @@
 import {Switch, Route} from 'react-router-dom'
 import React from 'react';
 // -------
-<<<<<<< HEAD
-import {
-  FirebaseAuthProvider,
-  IfFirebaseAuthed,
-  IfFirebaseUnAuthed
-} from "@react-firebase/auth";
-import firebase from "firebase/app";
-import "firebase/auth";
-import 'firebase/firestore';
-import {config} from "../../firebase-credentials.ts";
-=======
 import {fireAuth, fireDB} from '../../firebase';
 import firebase from 'firebase/app';
->>>>>>> f76a2ac4af9eef20fee081af8dd8fa0993b1c1ec
 // ------
 import TopNav from '../TopNav/TopNav';
 import SideNav from '../SideNav/SideNav';
@@ -36,17 +24,24 @@ class App extends React.Component {
   state = {
     isLoading: false,
     error: null,
-    currentUser: undefined
+    user: null
   }
 
-  componentDidMount(){
-
+  componentDidMount = () => {
+    fireAuth.onAuthStateChanged((userAuth) => {
+      if (userAuth) {
+        this.setState({
+          user: userAuth
+        })
+      } else {
+        this.setState({
+          user: null
+        })
+      }
+    })
   }
 
-  componentDidUpdate(prevProps){
-    prevProps !== this.props &&
-    console.log(this.state);
-  }
+
 
   createUser = () => {
     fireDB.collection("usersTwo").add({
@@ -112,6 +107,7 @@ class App extends React.Component {
           <button onClick={()=>{this.deleteData()}}>Delete Data</button>
             <TopNav className="app__topnav"/>
             <main className="app__main">
+              {this.state.user !== null && <p>I'm here</p>}
               <SideNav/>
                 <Switch>
                   <Route exact path="/" render={(routeProps) => <Landing {...routeProps} />} />
@@ -129,7 +125,7 @@ class App extends React.Component {
                 </Switch>
               {/* ------------------------------------------------------ */}
                 <Switch>
-                  <Route exact path="/" render={(routeProps) => <Landing {...routeProps} />} />
+                  {/* <Route exact path="/" render={(routeProps) => <Landing {...routeProps} />} /> */}
                   <Route exact path="/register" render={(routeProps) => <Register {...routeProps} />} />
                 </Switch>
               {/* ------------------------------------------------------ */}
