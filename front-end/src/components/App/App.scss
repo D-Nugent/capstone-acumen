@@ -1,6 +1,9 @@
 @import '../../styles/global';
 
 .app{
+    // background-color: $themeSlateOffsetPrimary;
+    // background-color: $themeSlatePrimary;
+
     &__topnav{
 
     }
@@ -8,5 +11,6 @@
         display: flex;
         height: 95vh;
         align-items: center;
+    // background-color: $themeSlatePrimary;
     }
 }

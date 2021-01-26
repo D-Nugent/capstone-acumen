@@ -1,22 +1,16 @@
 import React, { Component } from 'react';
-import {
-    IfFirebaseAuthed,
-    IfFirebaseUnAuthed
-} from "@react-firebase/auth";
-import firebase from "firebase/app";
-import "firebase/auth";
-import 'firebase/firestore';
+import {fireAuth, fireDB, fireAuthGoogle, fireAuthLinkedIn} from '../../firebase';
+import firebase from 'firebase/app';
+import './Landing.scss';
 
 export class Landing extends Component {
     render() {
+        console.log(this.props);
         return (
-            <div>
-                <IfFirebaseAuthed>
-                    <p>This is the landing page if you are logged in</p>
-                </IfFirebaseAuthed>
-                <IfFirebaseUnAuthed>
-                    <p>This is the landing page if you are not logged in</p>
-                </IfFirebaseUnAuthed>
+            <div className="landing">
+                <div className="landing__container">
+                    <h2 className="landing__container-heading">This is the landing page</h2>
+                </div>
             </div>
         )
     }

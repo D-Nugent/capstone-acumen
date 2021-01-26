@@ -17,90 +17,92 @@ import NewEnv from '../../pages/NewEnv/NewEnv';
 import ModifyEnv from '../../pages/ModifyEnv/ModifyEnv';
 import CandidateReel from '../../pages/CandidateReel/CandidateReel';
 import CandidateProfile from '../../pages/CandidateProfile/CandidateProfile';
+import PageLoading from '../../components/PageLoading/PageLoading'
 import './App.scss';
 
 
 class App extends React.Component {
   state = {
-    isLoading: false,
+    loaded: false,
     error: null,
-    currentUser: undefined
+    user: null
   }
 
   componentDidMount(){
-
-  }
-
-  componentDidUpdate(prevProps){
-    prevProps !== this.props &&
-    console.log(this.state);
-  }
-
-  createUser = () => {
-    fireDB.collection("usersTwo").add({
-      first: "Lisa",
-      last: "Schulz",
-      born: 1991,
-      profile: {
-        aboutMe: "String about me",
-        email: "lisa@gmail.com"
+    fireAuth.onAuthStateChanged((userAuth) => {
+      if (userAuth) {
+        this.setState({
+          user: userAuth,
+        })
+        console.log(this.state);
+          fireDB.collection("usersTwo").doc(userAuth.uid).get()
+          .then((doc)=> {
+            doc.exists?
+            this.setState({
+              userData: doc.data(),
+              loaded: true
+            })
+            :
+          fireDB.collection("businessesTwo").doc(userAuth.uid).get()
+          .then((doc)=> {
+              doc.exists?
+              this.setState({
+                userData: doc.data(),
+                loaded: true,
+              })
+              :
+              console.log("No such document!");
+          })
+          }).catch((error) => {
+            console.error("Error getting document:", error);
+          })
+      } else {
+        this.setState({
+          user: null,
+          loaded: true
+        })
       }
     })
-    .then((docRef) => {
-      console.log(`Document written with ID: ${docRef.id}`);
-    })
-    .catch((error) => {
-      console.error(error);
+  }
+
+  // deleteData = () => {
+  //   fireDB.collection("usersTwo").doc("RYonaGAFP0EedOD2FoAc").update({
+  //     born: firebase.firestore.FieldValue.delete(),
+  //     first: firebase.firestore.FieldValue.delete(),
+  //     last: firebase.firestore.FieldValue.delete(),
+  //     "profile.aboutMe": firebase.firestore.FieldValue.delete(),
+  //     "profile.email": firebase.firestore.FieldValue.delete(),
+  //     profile: firebase.firestore.FieldValue.delete()
+  //   }).then(()=> {
+  //     fireDB.collection("usersTwo").doc("RYonaGAFP0EedOD2FoAc").delete().then(()=> {
+  //       console.log("It was deleted!");
+  //     }).catch((error)=> {
+  //       console.error(error);
+  //     })
+  //   })
+  // }
+
+  processSignOut = () => {
+    this.setState({
+      user: null,
+      userData: null
     })
   }
 
-  updateUser = () => {
-    fireDB.collection("usersTwo").doc("RYonaGAFP0EedOD2FoAc").update({
-      "profile.email": "lisasarah27@gmail.com"
-    })
-    .then((docRef) => {
-      console.log(`Document updated!`);
-    })
-    .catch((error) => {
-      console.error(error);
-    })
-  }
-
-  deleteData = () => {
-    fireDB.collection("usersTwo").doc("RYonaGAFP0EedOD2FoAc").update({
-      born: firebase.firestore.FieldValue.delete(),
-      first: firebase.firestore.FieldValue.delete(),
-      last: firebase.firestore.FieldValue.delete(),
-      "profile.aboutMe": firebase.firestore.FieldValue.delete(),
-      "profile.email": firebase.firestore.FieldValue.delete(),
-      profile: firebase.firestore.FieldValue.delete()
-    }).then(()=> {
-      fireDB.collection("usersTwo").doc("RYonaGAFP0EedOD2FoAc").delete().then(()=> {
-        console.log("It was deleted!");
-      }).catch((error)=> {
-        console.error(error);
-      })
-    })
-  }
-
-  readData = () => {
-    fireDB.collection("users").get("WbG9pMzvkJ8s8dOZSbal").then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${(doc.data.membershipTier)}`);
-      })
-    })
-  }
+  // {this.state.user !== null && <p>I'm here</p>}
 
   render() {
     return (
-        <div className="app">
-          <button onClick={()=>{this.createUser()}}>Create User</button>
-          <button onClick={()=>{this.updateUser()}}>Update User</button>
-          <button onClick={()=>{this.readData()}}>Read Data</button>
-          <button onClick={()=>{this.deleteData()}}>Delete Data</button>
-            <TopNav className="app__topnav"/>
-            <main className="app__main">
-              <SideNav/>
+      <div className="app">
+        {this.state.loaded === false?
+        <PageLoading/>
+        :
+        <>
+            <Route render={(routeProps) => 
+              <TopNav className="app__topnav" {...routeProps} user={this.state.user} userData={this.state.userData} processSignOut={this.processSignOut}/>
+            }/>
+                <main className="app__main">
+                  <Route render={(routeProps) => <SideNav {...routeProps}/>}/>
                 <Switch>
                   <Route exact path="/" render={(routeProps) => <Landing {...routeProps} />} />
                   <Route exact path="/user/:userid/createProfile" render={(routeProps) => <ModifyProfile {...routeProps} />} />
@@ -117,7 +119,7 @@ class App extends React.Component {
                 </Switch>
               {/* ------------------------------------------------------ */}
                 <Switch>
-                  <Route exact path="/" render={(routeProps) => <Landing {...routeProps} />} />
+                  {/* <Route exact path="/" render={(routeProps) => <Landing {...routeProps} />} /> */}
                   <Route exact path="/register" render={(routeProps) => <Register {...routeProps} />} />
                 </Switch>
               {/* ------------------------------------------------------ */}
@@ -125,9 +127,11 @@ class App extends React.Component {
                 <Route exact path="/home" render={(routeProps) => <Home {...routeProps} />} />
                 <Route exact path="/user/:userid" render={(routeProps) => <UserProfile {...routeProps} />} />
                 <Route exact path="/business/:businessid" render={(routeProps) => <UserProfile {...routeProps} />} />
-                <Route exact path="/business/:businessid/:envId" render={(routeProps) => <ModifyEnv {...routeProps} />} />    
+                <Route exact path="/business/:businessid/:envId/edit" render={(routeProps) => <ModifyEnv {...routeProps} />} />    
               </Switch>
             </main>
+            </>
+            }
         </div>
     );
   }
