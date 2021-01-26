@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import {fireAuth, fireDB, fireAuthGoogle, fireAuthLinkedIn} from '../../firebase';
 import firebase from 'firebase/app';
+import ActionClose from '../ActionClose/ActionClose';
 import googleIcon from '../../assets/icons/btn_google.svg';
 import linkedinIcon from '../../assets/icons/btn_linkedIn.svg';
-import passHidIcon from '../../assets/icons/visibility_off.svg'
-import passVisIcon from '../../assets/icons/visibility.svg'
+import passHidIcon from '../../assets/icons/visibility_off.svg';
+import passVisIcon from '../../assets/icons/visibility.svg';
 import './SignInModal.scss';
 
 export class SignInModal extends Component {
     state = {
         modalState: "login",
         passVisible: false,
-        passVal: true
+        passVal: true,
+        accountType: "user",
     }
 
     loginUser = (event) => {
@@ -69,28 +71,46 @@ export class SignInModal extends Component {
 
     registerUser = (event) => {
         event.preventDefault();
-        const userFirstName = event.target.firstNameRef.value
-        const userLastName = event.target.lastNameRef.value
-        const userEmail = event.target.emailRef.value;
-        const userPass = event.target.passRef.value;
+            const userEmail = event.target.emailRef.value;
+            const userPass = event.target.passRef.value;
         fireAuth.createUserWithEmailAndPassword(userEmail, userPass)
         .then((userCredential) => {
             const user = userCredential.user;
             console.log(userCredential);
             console.log(user);
-            fireDB.collection("usersTwo").doc(user.uid).set({
-                firstName: userFirstName,
-                lastName: userLastName,
-                profile: {
-                    email: user.email,
-                    aboutMe: "I'm new to Acumen, watch this space!"
-                },
-                accountCreated: firebase.firestore.Timestamp.now(),
-                membershipTier: "Basic",
-                userUploads: [
-                   "Nothing to see here.", 
-                ]
-            }).then(this.props.loginModalClose(userCredential.additionalUserInfo.isNewUser))
+            if (this.state.accountType === "user") {
+                const userFirstName = event.target.firstNameRef.value
+                const userLastName = event.target.lastNameRef.value
+                fireDB.collection("usersTwo").doc(user.uid).set({
+                    firstName: userFirstName,
+                    lastName: userLastName,
+                    profile: {
+                        email: user.email,
+                        aboutMe: "I'm new to Acumen, watch this space!"
+                    },
+                    accountCreated: firebase.firestore.Timestamp.now(),
+                    membershipTier: "Basic",
+                    userUploads: [
+                       "Nothing to see here.", 
+                    ]
+                })
+                .then(this.props.loginModalClose(userCredential.additionalUserInfo.isNewUser))
+            } else {
+            const userCompanyName = event.target.companyRef.value
+                fireDB.collection("businessesTwo").doc(user.uid).set({
+                    companyName: userCompanyName,
+                    profile: {
+                        email: user.email,
+                        companyBio: "We're new to Acumen, watch this space!"
+                    },
+                    accountCreated: firebase.firestore.Timestamp.now(),
+                    membershipTier: "Basic",
+                    interviewEnvironments: [
+                       "Nothing to see here.", 
+                    ]
+                })
+                .then(this.props.loginModalClose(userCredential.additionalUserInfo.isNewUser))
+            }
         })
         .catch((error) => {
             switch (error.code) {
@@ -135,14 +155,29 @@ export class SignInModal extends Component {
         })
     }
 
+    toggleAccountType = () => {
+        this.state.accountType === "user"?
+        this.setState({accountType:"business"})
+        :this.setState({accountType:"user"})
+    }
+
     render() {
         return (
             <div className="account">
                 <div className="account__container">
+                    <div className="account__container-close" onClick={()=>{this.props.loginModalClose()}}>
+                        <ActionClose/>
+                    </div>
                     <h2 className="account__container-heading">
                         {this.state.modalState==="login"?"Let's get you signed in":
-                        this.state.modalState==="register"?"Let's get you signed up":"Let's reset that password!"}
+                        this.state.modalState==="register"?"Let's get you signed up":"Let's reset that password"}
                     </h2>
+                    {this.state.modalState==="register" &&
+                    <div className="account__container-type" onClick={()=>{this.toggleAccountType()}}>
+                        <div className={`account__container-type-toggle${this.state.accountType==="user"?"--active":""}`}>User</div>
+                        <div className={`account__container-type-toggle${this.state.accountType==="business"?"--active":""}`}>Business</div>
+                    </div>
+                    }
                     <form className="account__container-form" onSubmit={(event)=>{
                         this.state.passVal !==false &&
                         this.state.modalState==="login"?this.loginUser(event):
@@ -150,8 +185,14 @@ export class SignInModal extends Component {
                     }}>
                         {this.state.modalState==="register" &&
                             <>
-                                <input type="text" className="account__container-form-field" id="firstNameRef" required placeholder="First Name"/>
-                                <input type="text" className="account__container-form-field" id="lastNameRef" required placeholder="Last Name"/>
+                            {this.state.accountType==="user"?
+                                <>
+                                    <input type="text" className="account__container-form-field" id="firstNameRef" required placeholder="First Name"/>
+                                    <input type="text" className="account__container-form-field" id="lastNameRef" required placeholder="Last Name"/>
+                                </>
+                            :
+                            <input type="text" className="account__container-form-field" id="companyRef" required placeholder="Company Name"/>
+                            }
                             </>
                         }
                         <input type="email" className="account__container-form-field" id="emailRef" required placeholder="Email"/>
@@ -160,7 +201,7 @@ export class SignInModal extends Component {
                                 <input type={this.state.passVisible===false?"password":"text"} className="account__container-form-field"
                                     id="passRef" required placeholder="Password"
                                     onKeyUp={()=>{this.passwordValidation()}}/>
-                                <img src={this.state.passVisible===false?passHidIcon:passVisIcon} className="account__container-form-passvis" 
+                                <img src={this.state.passVisible===false?passHidIcon:passVisIcon} className="account__container-form-passvis" alt="password visibility toggle"
                                     onMouseDown={()=>{this.setState({passVisible: true})}}
                                     onMouseUp={()=>{this.setState({passVisible: false})}}/>
                             </div>
@@ -170,7 +211,7 @@ export class SignInModal extends Component {
                                 <input type={this.state.passVisible===false?"password":"text"} className="account__container-form-field"
                                     id="confirmPassRef" required placeholder="Confirm Password"
                                     onKeyUp={()=> {this.passwordValidation()}}/>
-                                <img src={this.state.passVisible===false?passHidIcon:passVisIcon} className="account__container-form-passvis" 
+                                <img src={this.state.passVisible===false?passHidIcon:passVisIcon} className="account__container-form-passvis" alt="password visibility toggle" 
                                     onMouseDown={()=>{this.setState({passVisible: true})}}
                                     onMouseUp={()=>{this.setState({passVisible: false})}}/>
                                 {this.state.passVal===false && <p className="account__container-form-passval">Sorry, your passwords don't match.</p>}
@@ -182,8 +223,8 @@ export class SignInModal extends Component {
                         {this.state.modalState==="login" && 
                         <p className="account__container-redirect-forgot" onClick={()=>{this.setState({modalState:"reset"})}}>Forgot your password?</p>}
                         <p className="account__container-redirect-register" 
-                            onClick={()=>{{this.state.modalState==="login"?
-                            this.setState({modalState:"register"}):this.setState({modalState:"login", passVal:true})}}}
+                            onClick={()=>{this.state.modalState==="login"?
+                            this.setState({modalState:"register"}):this.setState({modalState:"login", passVal:true, accountType:"user"})}}
                         >
                             {this.state.modalState==="login"?
                             "Not a member yet?":this.state.modalState==="reset"?"Return to login":"Already a member?"}
@@ -191,14 +232,18 @@ export class SignInModal extends Component {
                     </div>
                     {this.state.modalState!=="reset" &&
                     <>
-                    <div className="account__container-or">
-                        <hr/><span>OR</span><hr/>
-                    </div>
-                    <h4 className="account__container-alt">Continue with:</h4>
-                    <div className="account__container-providers">
-                        <img src={googleIcon} onClick={()=>{this.loginGoogle()}}/>
-                        <img src={linkedinIcon} onClick={()=>{this.loginGoogle()}}/>
-                    </div>
+                    {this.state.accountType!=="business" &&
+                    <>
+                        <div className="account__container-or">
+                            <hr/><span>OR</span><hr/>
+                        </div>
+                        <h4 className="account__container-alt">Continue with:</h4>
+                        <div className="account__container-providers">
+                            <img src={googleIcon} onClick={()=>{this.loginGoogle()}} alt="login with google button"/>
+                            <img src={linkedinIcon} onClick={()=>{this.loginGoogle()}} alt="login with linkedIn button"/>
+                        </div>
+                    </>
+                    }
                     </>
                     }
                 </div>

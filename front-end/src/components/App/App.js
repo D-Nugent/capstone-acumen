@@ -28,21 +28,31 @@ class App extends React.Component {
     user: null
   }
 
-  async componentDidMount(){
-    await fireAuth.onAuthStateChanged((userAuth) => {
+  componentDidMount(){
+    fireAuth.onAuthStateChanged((userAuth) => {
       if (userAuth) {
         this.setState({
           user: userAuth,
-          loaded: true
         })
+        console.log(this.state);
           fireDB.collection("usersTwo").doc(userAuth.uid).get()
           .then((doc)=> {
             doc.exists?
             this.setState({
               userData: doc.data(),
+              loaded: true
             })
             :
-            console.log("No such document!");
+          fireDB.collection("businessesTwo").doc(userAuth.uid).get()
+          .then((doc)=> {
+              doc.exists?
+              this.setState({
+                userData: doc.data(),
+                loaded: true,
+              })
+              :
+              console.log("No such document!");
+          })
           }).catch((error) => {
             console.error("Error getting document:", error);
           })
@@ -79,6 +89,8 @@ class App extends React.Component {
     })
   }
 
+  // {this.state.user !== null && <p>I'm here</p>}
+
   render() {
     return (
       <div className="app">
@@ -86,10 +98,11 @@ class App extends React.Component {
         <PageLoading/>
         :
         <>
-            <TopNav className="app__topnav" user={this.state.user} userData={this.state.userData} processSignOut={this.processSignOut}/>
-            <main className="app__main">
-              {this.state.user !== null && <p>I'm here</p>}
-              <SideNav/>
+            <Route render={(routeProps) => 
+              <TopNav className="app__topnav" {...routeProps} user={this.state.user} userData={this.state.userData} processSignOut={this.processSignOut}/>
+            }/>
+                <main className="app__main">
+                  <Route render={(routeProps) => <SideNav {...routeProps}/>}/>
                 <Switch>
                   <Route exact path="/" render={(routeProps) => <Landing {...routeProps} />} />
                   <Route exact path="/user/:userid/createProfile" render={(routeProps) => <ModifyProfile {...routeProps} />} />
@@ -114,7 +127,7 @@ class App extends React.Component {
                 <Route exact path="/home" render={(routeProps) => <Home {...routeProps} />} />
                 <Route exact path="/user/:userid" render={(routeProps) => <UserProfile {...routeProps} />} />
                 <Route exact path="/business/:businessid" render={(routeProps) => <UserProfile {...routeProps} />} />
-                <Route exact path="/business/:businessid/:envId" render={(routeProps) => <ModifyEnv {...routeProps} />} />    
+                <Route exact path="/business/:businessid/:envId/edit" render={(routeProps) => <ModifyEnv {...routeProps} />} />    
               </Switch>
             </main>
             </>

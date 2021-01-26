@@ -3,29 +3,69 @@
 .topnav{
     display: flex;
     width: 100%;
-    align-items: center;
     background-color: $themeSlatePrimary;
     height: 5vh;
     position: relative;
+    justify-content: space-between;
 
-    &__heading{
-        color: $themeSlateOffsetPrimary;
+    &.--launch{
+        background-color: $themeSlateOffsetPrimary;
+    }
+    
+    &__account{
+        width: 100%;
+        display: flex;
+        align-items: center;
+
+        &-heading{
+            color: $themeSlateOffsetPrimary;
+    
+            &.--launch{
+                color: $themeSlatePrimary
+            }
+        }
+    
+        &-user{
+            color: $themeSlateContrastTertiary;
+        }
+    
+        &-auth-control{
+            background-color: $themeSlateContrastTertiary;
+            border-color: $themeSlateContrastTertiary;
+            color: $themeSlateOffsetPrimary;
+            font-family: "Raleway";
+            border-radius: 4px;
+            margin-left: 16px;
+    
+            &:hover{
+                cursor: pointer;
+            }
+        }
     }
 
-    &__user{
-        color: $themeSlateContrastTertiary;
-    }
+    &__navigation{
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: flex-end;
 
-    &__auth-control{
-        background-color: $themeSlateContrastTertiary;
-        border-color: $themeSlateContrastTertiary;
-        color: $themeSlateOffsetPrimary;
-        font-family: "Raleway";
-        border-radius: 4px;
-        margin-left: 16px;
+        &-link{
+            color: $themeSlateOffsetPrimary;
+            width: fit-content;
+            margin: 8px 16px;
+            font-size: 1rem;
+            font-family: "Raleway";
+            text-decoration: none;
+            font-weight: 600;
 
-        &:hover{
-            cursor: pointer;
+            &.--launch{
+                color: $themeSlatePrimary;
+            }
+            
+            &.--active{
+                color: $themeSlateContrastTertiary;
+            }
+
         }
     }
 }
