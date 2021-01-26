@@ -1,1 +1,58 @@
 @import '../../styles/global';
+
+@keyframes close-top-transform {
+    0%{transform:skew(0,0)translateY(0);background-color: $themeSlatePrimary};
+    50%{transform:skew(0,22.5deg)translateY(6px)scaleX(.8)};
+    100%{transform:skew(0,45deg)translateY(10px)scaleX(.6);background-color: $themeSlateContrastTertiary};
+}
+@keyframes close-detail-transform {
+    0%{opacity: 1};
+    50%{opacity: .5};
+    100%{opacity: 0};
+}
+@keyframes close-bottom-transform {
+    0%{transform: skew(0,0)translateY(0);background-color: $themeSlatePrimary};
+    50%{transform: skew(0,-22.5deg)translateY(-6px)scaleX(.8)};
+    100%{transform: skew(0,-45deg)translateY(-10px)scaleX(.6);background-color: $themeSlateContrastTertiary};
+}
+
+.action{
+    height: 24px;
+    width: 24px;
+
+    &__close{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        &-top{
+            background-color: $themeSlatePrimary;
+            height: 4px;
+            width: 100%;
+            position: relative;
+        }
+        &-detail{
+            margin: 3px 0;
+            font-size: .5rem;
+            font-weight: 600;
+            letter-spacing: .125rem;
+        }
+        &-bottom{
+            background-color: $themeSlatePrimary;
+            height: 4px;
+            width: 100%;
+        }
+        &:hover > .action__close-top{
+            animation: close-top-transform .25s linear forwards;
+        }
+        &:hover > .action__close-bottom{
+            animation: close-bottom-transform .25s linear forwards;
+        }
+        &:hover > .action__close-detail{
+            animation: close-detail-transform .125s linear forwards;
+        }
+        &:hover{
+            cursor: pointer;
+        }
+    }
+}
