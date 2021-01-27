@@ -7,8 +7,8 @@ import firebase from 'firebase/app';
 import TopNav from '../TopNav/TopNav';
 import SideNav from '../SideNav/SideNav';
 import Landing from '../../pages/Landing/Landing';
-import Home from '../../pages/Home/Home';
-import Register from '../../pages/Register/Register';
+import HowDoesItWork from '../../pages/HowDoesItWork/HowDoesItWork';
+import About from '../../pages/About/About';
 import ModifyProfile from '../../pages/ModifyProfile/ModifyProfile';
 import UserProfile from '../../pages/UserProfile/UserProfile';
 import NewVideo from '../../pages/NewVideo/NewVideo';
@@ -120,11 +120,11 @@ class App extends React.Component {
               {/* ------------------------------------------------------ */}
                 <Switch>
                   {/* <Route exact path="/" render={(routeProps) => <Landing {...routeProps} />} /> */}
-                  <Route exact path="/register" render={(routeProps) => <Register {...routeProps} />} />
+                  <Route exact path="/about" render={(routeProps) => <About {...routeProps} />} />
                 </Switch>
               {/* ------------------------------------------------------ */}
               <Switch>
-                <Route exact path="/home" render={(routeProps) => <Home {...routeProps} />} />
+                <Route exact path="/how" render={(routeProps) => <HowDoesItWork {...routeProps} />} />
                 <Route exact path="/user/:userid" render={(routeProps) => <UserProfile {...routeProps} />} />
                 <Route exact path="/business/:businessid" render={(routeProps) => <UserProfile {...routeProps} />} />
                 <Route exact path="/business/:businessid/:envId/edit" render={(routeProps) => <ModifyEnv {...routeProps} />} />    
