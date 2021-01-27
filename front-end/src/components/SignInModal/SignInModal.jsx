@@ -200,7 +200,7 @@ export class SignInModal extends Component {
                             <div className="account__container-form-passcontainer">
                                 <input type={this.state.passVisible===false?"password":"text"} className="account__container-form-field"
                                     id="passRef" required placeholder="Password"
-                                    onKeyUp={()=>{this.passwordValidation()}}/>
+                                    onKeyUp={()=>{this.state.modalState!=="login" && this.passwordValidation()}}/>
                                 <img src={this.state.passVisible===false?passHidIcon:passVisIcon} className="account__container-form-passvis" alt="password visibility toggle"
                                     onMouseDown={()=>{this.setState({passVisible: true})}}
                                     onMouseUp={()=>{this.setState({passVisible: false})}}/>
