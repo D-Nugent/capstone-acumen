@@ -5,7 +5,7 @@ import mailIcon from '../../assets/icons/mail_outline.svg';
 import telIcon from '../../assets/icons/call.svg';
 import cameraIcon from '../../assets/icons/camera.svg';
 import memberIcon from '../../assets/icons/membership.svg';
-import addVideoIcon from '../../assets/icons/add_video1.svg';
+import addVideoIcon from '../../assets/icons/add_video.svg';
 import './UserProfile.scss';
 
 export class UserProfile extends Component {
