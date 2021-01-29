@@ -3,6 +3,8 @@
 node_modules/
 *.eslintcache
 .eslintcache
+*.env
+.env
 
 # dependencies
 /node_modules
