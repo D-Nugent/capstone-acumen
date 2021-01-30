@@ -229,6 +229,12 @@
                             }
                         }
                     }
+                    &-construction{
+                        width: 100%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
                     &-edit{
                         display: flex;
                         flex-direction: column;
@@ -288,8 +294,11 @@
                         position: relative;
                         box-shadow: 4px 4px 8px $themeSlatePrimary;
                         display: flex;
+                        flex-direction: column;
                         justify-content: center;
                         align-items: center;
+                        text-decoration: none;
+                        color: $themeSlatePrimary;
 
                         &:not(:last-child){
                             margin-right: -140px;
@@ -301,6 +310,10 @@
                         &:hover:last-child > img{
                             opacity: 1;
                         }
+                        &:hover:last-child > h4{
+                            color: $themeSlatePrimary;
+                        }
+
                         &-title{
                             transform-origin: center;
                             transform: rotate(-90deg);
@@ -312,6 +325,10 @@
                         &-icon{
                             height: 96px;
                             opacity: 0.6;
+                        }
+                        &-desc{
+                            margin: 8px 8px 0;
+                            color: #FFF;
                         }
                     }
                 }
