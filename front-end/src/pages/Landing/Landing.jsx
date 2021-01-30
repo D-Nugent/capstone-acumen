@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import {fireAuth, fireDB, fireAuthGoogle, fireAuthLinkedIn} from '../../firebase';
-import firebase from 'firebase/app';
 import './Landing.scss';
 
 export class Landing extends Component {

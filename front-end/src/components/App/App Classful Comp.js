@@ -1,5 +1,9 @@
 import {Switch, Route} from 'react-router-dom'
-import React, {useContext} from 'react';
+import React from 'react';
+// -------
+import {fireAuth, fireDB} from '../../firebase';
+import firebase from 'firebase/app';
+// ------
 import TopNav from '../TopNav/TopNav';
 import SideNav from '../SideNav/SideNav';
 import Landing from '../../pages/Landing/Landing';
@@ -15,11 +19,51 @@ import CandidateReel from '../../pages/CandidateReel/CandidateReel';
 import CandidateProfile from '../../pages/CandidateProfile/CandidateProfile';
 import PageLoading from '../../components/PageLoading/PageLoading'
 import './App.scss';
-import {firebaseContext} from '../../provider/FirebaseProvider';
 
 
-function App () {
-  const {user, dataLoad} = useContext(firebaseContext);
+class App extends React.Component {
+  state = {
+    loaded: false,
+    error: null,
+    user: null
+  }
+
+  componentDidMount(){
+    fireAuth.onAuthStateChanged((userAuth) => {
+      if (userAuth) {
+        this.setState({
+          user: userAuth,
+        })
+        console.log(this.state);
+          fireDB.collection("usersTwo").doc(userAuth.uid).get()
+          .then((doc)=> {
+            doc.exists?
+            this.setState({
+              userData: doc.data(),
+              loaded: true
+            })
+            :
+          fireDB.collection("businessesTwo").doc(userAuth.uid).get()
+          .then((doc)=> {
+              doc.exists?
+              this.setState({
+                userData: doc.data(),
+                loaded: true,
+              })
+              :
+              console.log("No such document!");
+          })
+          }).catch((error) => {
+            console.error("Error getting document:", error);
+          })
+      } else {
+        this.setState({
+          user: null,
+          loaded: true
+        })
+      }
+    })
+  }
 
   // deleteData = () => {
   //   fireDB.collection("usersTwo").doc("RYonaGAFP0EedOD2FoAc").update({
@@ -38,14 +82,24 @@ function App () {
   //   })
   // }
 
+  processSignOut = () => {
+    this.setState({
+      user: null,
+      userData: null
+    })
+  }
+
+  // {this.state.user !== null && <p>I'm here</p>}
+
+  render() {
     return (
       <div className="app">
-        {dataLoad.loaded === false?
+        {this.state.loaded === false?
         <PageLoading/>
         :
         <>
             <Route render={(routeProps) => 
-              <TopNav className="app__topnav" {...routeProps}/>
+              <TopNav className="app__topnav" {...routeProps} user={this.state.user} userData={this.state.userData} processSignOut={this.processSignOut}/>
             }/>
                 <main className="app__main">
                   <Route render={(routeProps) => <SideNav {...routeProps}/>}/>
@@ -80,6 +134,7 @@ function App () {
             }
         </div>
     );
+  }
 }
 
-export default App
+export default App;

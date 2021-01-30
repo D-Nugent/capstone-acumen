@@ -1,17 +1,31 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, {useState, useContext} from 'react';
+import {videoRef,imageRef} from '../../firebase';
+import {fireDB} from '../../firebase';
+import firebase from 'firebase/app';
+import {firebaseContext} from '../../provider/FirebaseProvider';
+import {v4 as uuidv4} from 'uuid'
 import addIcon from '../../assets/icons/add1.svg';
 // import addIconFocus from '../../assets/icons/add2.svg';
 import editIcon from '../../assets/icons/edit.svg';
 import deleteIcon from '../../assets/icons/delete.svg';
 import './NewVideo.scss';
-import VideoPlayer from '../../components/VideoPlayer/VideoPlayer';
-import {useReactMediaRecorder} from 'react-media-recorder';
+
+// #ToDo - Add video uploading bar
+// #ToDo -  Add Question order editing
+// #ToDo - Add functionality to choose input devices
+// #ToDo - Add limitations for no. of questions and video length based on account type
 
 export default function NewVideo () {
   const [recording, setRecording] = useState(false);
-  const [videofile, setVideofile] = useState("");
-  const [videoInitTime,setVideoInitTime] = useState(0);
+  const [videofile, setVideofile] = useState(null);
+  const [videoId, setVideoId] = useState(null)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [videoInitTime,setVideoInitTime] = useState();
+  const [videoEndTime,setVideoEndTime] = useState();
+  const {user, dataLoad} = useContext(firebaseContext);
 
+  const uploadVideoRef = videoRef.child(user.uid).child(`${videoId}.mp4`)
+  // #ToDo - Ensure that dynamic videoId is working as intended
   let constraintObj = {
     audio: true,
     video: {
@@ -20,6 +34,67 @@ export default function NewVideo () {
       height: {min: 480, ideal: 720, max: 1080}
     }
   }
+
+  const uploadVideoBlob = (blob) => {
+    setVideoEndTime(Date.now())
+    let vidDuration = Math.floor((videoEndTime - videoInitTime)/1000)
+    console.log(videoInitTime);
+    console.log(videoEndTime);
+
+    const metadata = {
+      contentType: 'video/mp4'
+    }
+    const uploadTask = uploadVideoRef.put(blob,metadata)
+    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,(snapshot) => {
+      const progress = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
+      console.log(`Upload is ${progress}% done`);
+      setUploadProgress(progress)
+      switch (snapshot.state) {
+        case firebase.storage.TaskState.PAUSED:
+          console.log('Upload is paused');
+          break;
+        case firebase.storage.TaskState.RUNNING:
+          console.log('Upload is running');
+          break;
+      }
+    }, function(error) {
+      console.error(error);
+    }, function() {
+      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL){
+        console.log(`File available at ${downloadURL}`);
+        setVideoId(uuidv4())
+        fireDB.collection("usersTwo").doc(user.uid).set({
+          userUploads:[
+            {
+              title: "Testicles",
+              videoId: videoId,
+              videoSrc: downloadURL,
+              duration: vidDuration
+            }
+          ]
+        }, {merge: true})
+      })
+    }
+    )
+  }
+
+  // const uploadVideo = () => {
+  //   const metadata = {
+  //     contentType: 'video/mp4'
+  //   }
+
+  //   const uploadTask = uploadVideoRef.put(videofile,metadata)
+    
+  //   uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,(snapshot) => {
+  //     const progress = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
+  //     console.log(`Upload is ${progress}% done`);
+  //   },
+  //   ()=>{
+  //     uploadTask.snapshot.uploadVideoRef.getDownloadURL().then(function(downloadURL){
+  //       console.log(`File available at ${downloadURL}`);
+  //     })
+  //   })
+  // }
 
   const getCameraSelection = async () => {
     const devices = await navigator.mediaDevices.enumerateDevices();
@@ -77,7 +152,9 @@ export default function NewVideo () {
         chunks = [];
         let videoURL = window.URL.createObjectURL(blob);
         vidPlayer.src = videoURL;
-        setVideofile(videoURL);
+        console.log(videoURL);
+        setVideofile(blob);
+        uploadVideoBlob(blob)
       }
     })
     .catch(function(err) {
@@ -89,11 +166,14 @@ export default function NewVideo () {
     setRecording(false);
     let stream = document.querySelector('.recorder__preview').srcObject;
     stream.getTracks().forEach(function(track) {
-      if (track.readyState == 'live') {
+      if (track.readyState === 'live') {
         track.stop();
       }
+
+      let vidDuration = Math.floor((videoEndTime - videoInitTime)/1000)
+
+      console.log(vidDuration);
     })
-    console.log(videoInitTime);
   }
 
   const timeTrack = (event) => {
@@ -126,6 +206,7 @@ export default function NewVideo () {
             }
             <button className="recorder__actions-start">Start Recording</button>
             <button className="recorder__actions-stop">Stop Recording</button>
+            <button className="recorder__actions-upload">Upload Recording</button>
           </div>
           <div className="video-options">
             <select name="" id="" className="video-select">
