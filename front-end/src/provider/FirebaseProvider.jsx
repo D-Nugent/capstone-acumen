@@ -39,8 +39,24 @@ function FirebaseProvider(props) {
     setUser(null)
     }
 
+    const updateEmailAddress = (email) => {
+        fireAuth.currentUser.updateEmail(email).then(function(){
+            console.log("Update Successfull");
+        }).catch(function(error){
+            console.error(error);
+        })
+    }
+
+    const dataMonitor = (collection,document) => {
+        let unsubscribe = fireDB.collection(collection).doc(document).onSnapshot(function(doc){
+            setDataLoad({loaded: true, userData: doc.data()})
+        })
+        unsubscribe()
+    }
+
+
     return (
-        <firebaseContext.Provider value={{user,dataLoad,processSignOut}}>
+        <firebaseContext.Provider value={{user,dataLoad,dataMonitor,processSignOut,updateEmailAddress}}>
             {props.children}
         </firebaseContext.Provider>
     )
