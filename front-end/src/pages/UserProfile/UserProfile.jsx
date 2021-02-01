@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react';
 import {Link} from 'react-router-dom';
 import {firebaseContext} from '../../provider/FirebaseProvider';
-import { fireDB, fireAuth } from '../../firebase';
+import { fireDB, imageRef } from '../../firebase';
 import firebase from 'firebase/app';
+import {v4 as uuidv4} from 'uuid';
 import defaultProfileImage from '../../assets/icons/account_box.svg';
 import profileExample from '../../assets/images/profile-example.jpg';
 import mailIcon from '../../assets/icons/mail_outline.svg';
@@ -19,9 +20,14 @@ import './UserProfile.scss';
 //then when Save is clicked, values from state values willuse fireDB to update database (remember merge)
 
 function UserProfile() {
-  const {user, dataLoad,dataMonitor, updateEmailAddress, unsubscribe} = useContext(firebaseContext);
+  const {user, dataLoad,dataUpdate, updateEmailAddress} = useContext(firebaseContext);
   const [profileDetail, setProfileDetail] = useState("about");
   const [editMode, setEditMode] = useState(false);
+  const [photoUpload, setPhotoUpload] = useState({
+    blob: dataLoad.userData.profileImageSrc.blob,
+    src: dataLoad.userData.profileImageSrc.blob,
+    type: null,
+  })
   const [profileData, setProfileData] = 
     useState({
       firstName: dataLoad.userData.firstName,
@@ -29,9 +35,9 @@ function UserProfile() {
       email: dataLoad.userData.profile.email,
       phone: dataLoad.userData.profile.phone,
       aboutMe: dataLoad.userData.profile.aboutMe,
-      experienceOne: dataLoad.userData.profile.experience.length>=1?dataLoad.userData.profile.experience[0]:[],
-      experienceTwo: dataLoad.userData.profile.experience.length>=2?dataLoad.userData.profile.experience[1]:[],
-      experienceThree: dataLoad.userData.profile.experience.length>=3?dataLoad.userData.profile.experience[2]:[],
+      experienceOne: dataLoad.userData.profile.experience.length>=1?dataLoad.userData.profile.experience[0]:"",
+      experienceTwo: dataLoad.userData.profile.experience.length>=2?dataLoad.userData.profile.experience[1]:"",
+      experienceThree: dataLoad.userData.profile.experience.length>=3?dataLoad.userData.profile.experience[2]:"",
     })
 
   const toggleProfileDetail = () => {
@@ -46,21 +52,56 @@ function UserProfile() {
       return setEditMode(true)
     } else{
       // updateEmailAddress(profileData.email);
-      dataMonitor("usersTwo", user.uid);
-      let experienceArray = [profileData.experienceOne,profileData.experienceTwo,profileData.experienceThree];
+      if (dataLoad.userData.profileImageSrc.blob!==photoUpload.blob){
+        const metadata = {
+          contentType: photoUpload.type
+        };
+        let blob = new Blob([photoUpload.blob], {'type':`${photoUpload.type};`})
+        const uploadImageRef = imageRef.child(user.uid).child(`profilePhoto`)
+        const uploadTask = uploadImageRef.put(blob,metadata);
+        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,(snapshot) => {
+          const progress = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
+          console.log(`Upload is ${progress}% done`);
+          switch (snapshot.state) {
+            case firebase.storage.TaskState.PAUSED:
+              console.log('Upload is paused');
+              break;
+            case firebase.storage.TaskState.RUNNING:
+              console.log('Upload is running');
+              break;
+          }
+        }, function(error) {
+          console.error(error);
+        }, function() {
+          uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL){
+            console.log(`File available at ${downloadURL}`);
+            fireDB.collection("usersTwo").doc(user.uid).update({
+              profileImageSrc: {blob: downloadURL,}
+            })
+          })
+        })
+      }
+
+      let experienceArray = profileData.experienceOne.concat(profileData.experienceTwo,profileData.experienceThree);
       fireDB.collection("usersTwo").doc(user.uid).update({
         firstName: profileData.firstName,
         lastName: profileData.lastName,
-        profile: {
-          "email": profileData.email,
-          "phone": profileData.phone,
-          "aboutMe": profileData.aboutMe,
-          experience: firebase.firestore.FieldValue.arrayUnion("test")
-        }
+        "profile.email": profileData.email,
+        "profile.phone": profileData.phone,
+        "profile.aboutMe": profileData.aboutMe,
+        "profile.experience": experienceArray
       }).catch(function(error){
           console.error(error);
       }).then(()=>{
-        // unsubscribe();
+        fireDB.collection("usersTwo").doc(user.uid).get()
+        .then((doc)=>{
+          doc.exists?
+          dataUpdate(doc.data())
+          :
+          console.log("Document does not exist.");
+        })
+      }).catch((error)=> {
+        console.error("Error getting document:", error);
       }).then(()=>{
         setEditMode(false)
       })
@@ -75,10 +116,14 @@ function UserProfile() {
       email: dataLoad.userData.profile.email,
       phone: dataLoad.userData.profile.phone,
       aboutMe: dataLoad.userData.profile.aboutMe,
-      experienceOne: dataLoad.userData.profile.experience.length>=1?dataLoad.userData.profile.experience[0]:[],
-      experienceTwo: dataLoad.userData.profile.experience.length>=2?dataLoad.userData.profile.experience[1]:[],
-      experienceThree: dataLoad.userData.profile.experience.length>=3?dataLoad.userData.profile.experience[2]:[],
-    })
+      experienceOne: dataLoad.userData.profile.experience.length>=1?dataLoad.userData.profile.experience[0]:"",
+      experienceTwo: dataLoad.userData.profile.experience.length>=2?dataLoad.userData.profile.experience[1]:"",
+      experienceThree: dataLoad.userData.profile.experience.length>=3?dataLoad.userData.profile.experience[2]:"",
+    });
+    setPhotoUpload({
+      ...photoUpload,
+      blob: dataLoad.userData.profileImageSrc.blob,
+      src: dataLoad.userData.profileImageSrc.blob});
     setEditMode(false);
     console.log(profileData);
   }
@@ -90,7 +135,7 @@ function UserProfile() {
       lastName: document.querySelector('#lastNameRef').value,
       email: document.querySelector('#emailRef').value,
       phone: document.querySelector('#phoneRef').value,
-      aboutMe: document.querySelector('#aboutMeRef').value,
+      aboutMe: document.querySelector('#aboutMeRef')?document.querySelector('#aboutMeRef').value:profileData.aboutMe,
     })
   console.log(profileData);
   }
@@ -114,6 +159,22 @@ function UserProfile() {
   console.log(profileData);
   }
 
+  const uploadSelector = (event) =>{
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    console.log(file);
+    reader.onloadend = () => {
+      console.log(reader.result);
+      console.log(file.type);
+      setPhotoUpload({
+        blob: file,
+        src: reader.result,
+        type: file.type,
+      });
+    }
+    reader.readAsDataURL(file)
+  }
+
   console.log(dataLoad);
   console.log(user);
   return (
@@ -122,12 +183,17 @@ function UserProfile() {
           <div className="userprofile__container-border"></div>
           <div className="userprofile__container-profile">
             <div className="userprofile__container-profile-card">
-              <img src={dataLoad.userData.profileImageSrc} alt="user profile" className="userprofile__container-profile-card-image"/>
+            {/* <input className="image-container__upload-button" type="file" id="files" accept="image/*" onChange={(event)=> {this.uploadSelector(event)}}/> */}
+                    {/* <label className="image-container__upload-button-prompt" htmlFor="files">Upload Your Image</label> */}
+              <img src={photoUpload.src} alt="user profile" className="userprofile__container-profile-card-image"/>
               {editMode===true &&
-                <div className="userprofile__container-profile-card-upload">
+                
+                <label className="userprofile__container-profile-card-upload" htmlFor="imageUpload">
+                  <input type="file" id="imageUpload" accept="image/*" className="userprofile__container-profile-card-upload-mgr"
+                  onChange={(event)=>{uploadSelector(event)}}/>
                   <img src={cameraIcon} alt="upload icon" className="userprofile__container-profile-card-upload-icon"/>
                   <p className="userprofile__container-profile-card-upload-desc">Upload/Change Photo</p>
-                </div>
+                </label>
               }
               <div className="userprofile__container-profile-card-details">
                 {editMode===false?
@@ -210,23 +276,20 @@ function UserProfile() {
               editMode===false?
                 <>
                 {dataLoad.userData.profile.experience.length>0?
-                dataLoad.userData.profile.experience[0].experienceTitle!==""?
                 dataLoad.userData.profile.experience.map((experience, index) => {
-                  return (
-                    <div className="userprofile__container-content-wrapper-detail" key={index}>
-                      <h4 className="userprofile__container-content-wrapper-detail-heading">
-                        {experience.experienceTitle}
-                      </h4>
-                      <p className="userprofile__container-content-wrapper-detail-values">
-                        {experience.experienceDetail}
-                      </p>
-                    </div>
-                  )
+                  if (experience.experienceTitle!==""){
+                    return (
+                      <div className="userprofile__container-content-wrapper-detail" key={index}>
+                        <h4 className="userprofile__container-content-wrapper-detail-heading">
+                          {experience.experienceTitle}
+                        </h4>
+                        <p className="userprofile__container-content-wrapper-detail-values">
+                          {experience.experienceDetail}
+                        </p>
+                      </div>
+                    )
+                  }
                 })
-                :
-                <p className="userprofile__container-content-wrapper-detail-construction">
-                  I'm bursting with experience, I just haven't had time to add it to my profile yet!
-                </p>
                 :
                   <p className="userprofile__container-content-wrapper-detail-construction">
                     I'm bursting with experience, I just haven't had time to add it to my profile yet!

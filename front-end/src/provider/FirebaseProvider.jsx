@@ -47,6 +47,12 @@ function FirebaseProvider(props) {
         })
     }
 
+    const dataUpdate = (data) => {
+        setDataLoad({loaded: true, userData: data})
+        console.log("Local Data was updated");
+    }
+
+    /* #ToDo - Implement Realtime listening for appropriate sections*/
     const dataMonitor = (collection,document) => {
         let unsubscribe = fireDB.collection(collection).doc(document).onSnapshot(function(doc){
             setDataLoad({loaded: true, userData: doc.data()})
@@ -56,7 +62,7 @@ function FirebaseProvider(props) {
 
 
     return (
-        <firebaseContext.Provider value={{user,dataLoad,dataMonitor,processSignOut,updateEmailAddress}}>
+        <firebaseContext.Provider value={{user,dataLoad,dataUpdate,processSignOut,updateEmailAddress}}>
             {props.children}
         </firebaseContext.Provider>
     )

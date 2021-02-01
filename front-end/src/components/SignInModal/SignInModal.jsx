@@ -40,7 +40,7 @@ export class SignInModal extends Component {
             const token = credential.accessToken;
             const user = result.user;
             const addInfo = result.additionalUserInfo;
-            addInfo.isNewUser === true &&
+            addInfo.isNewUser === false &&
             fireDB.collection("usersTwo").doc(user.uid).set({
                 firstName: addInfo.profile.given_name,
                 lastName: addInfo.profile.family_name,
@@ -50,7 +50,9 @@ export class SignInModal extends Component {
                     aboutMe: '',
                     experience:[],
                 },
-                profileImageSrc: addInfo.profile.picture,
+                profileImageSrc:{
+                    blob: addInfo.profile.picture, 
+                },
                 accountCreated: firebase.firestore.Timestamp.now(),
                 membershipTier: "Basic",
                 userUploads: []
@@ -85,12 +87,14 @@ export class SignInModal extends Component {
                     firstName: userFirstName,
                     lastName: userLastName,
                     profile: {
-                        experience:[],
+                        email: user.email,
                         phone: '',
                         aboutMe:'',
-                        email: user.email,
+                        experience:[],
                     },
-                    profileImageSrc: '',
+                    profileImageSrc:{
+                        blob: "", 
+                    },
                     accountCreated: firebase.firestore.Timestamp.now(),
                     membershipTier: "Basic",
                     userUploads: []
