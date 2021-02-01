@@ -53,12 +53,12 @@ function FirebaseProvider(props) {
     }
 
     /* #ToDo - Implement Realtime listening for appropriate sections*/
-    const dataMonitor = (collection,document) => {
-        let unsubscribe = fireDB.collection(collection).doc(document).onSnapshot(function(doc){
-            setDataLoad({loaded: true, userData: doc.data()})
-        })
-        unsubscribe()
-    }
+    // const dataMonitor = (collection,document) => {
+    //     let unsubscribe = fireDB.collection(collection).doc(document).onSnapshot(function(doc){
+    //         setDataLoad({loaded: true, userData: doc.data()})
+    //     })
+    //     unsubscribe()
+    // }
 
 
     return (

@@ -81,7 +81,7 @@ function UserProfile() {
           })
         })
       }
-
+      /* #ToDo - Need to fix concat AGAIN*/
       let experienceArray = profileData.experienceOne.concat(profileData.experienceTwo,profileData.experienceThree);
       fireDB.collection("usersTwo").doc(user.uid).update({
         firstName: profileData.firstName,
@@ -107,7 +107,6 @@ function UserProfile() {
       })
     }
   }
-
 
   const cancelProfileChanges = () => {
     setProfileData({
@@ -183,11 +182,8 @@ function UserProfile() {
           <div className="userprofile__container-border"></div>
           <div className="userprofile__container-profile">
             <div className="userprofile__container-profile-card">
-            {/* <input className="image-container__upload-button" type="file" id="files" accept="image/*" onChange={(event)=> {this.uploadSelector(event)}}/> */}
-                    {/* <label className="image-container__upload-button-prompt" htmlFor="files">Upload Your Image</label> */}
-              <img src={photoUpload.src} alt="user profile" className="userprofile__container-profile-card-image"/>
+              <img src={photoUpload.src?photoUpload.src:defaultProfileImage} alt="user profile" className="userprofile__container-profile-card-image"/>
               {editMode===true &&
-                
                 <label className="userprofile__container-profile-card-upload" htmlFor="imageUpload">
                   <input type="file" id="imageUpload" accept="image/*" className="userprofile__container-profile-card-upload-mgr"
                   onChange={(event)=>{uploadSelector(event)}}/>

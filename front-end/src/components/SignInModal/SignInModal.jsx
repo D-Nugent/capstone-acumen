@@ -40,7 +40,7 @@ export class SignInModal extends Component {
             const token = credential.accessToken;
             const user = result.user;
             const addInfo = result.additionalUserInfo;
-            addInfo.isNewUser === false &&
+            addInfo.isNewUser === true &&
             fireDB.collection("usersTwo").doc(user.uid).set({
                 firstName: addInfo.profile.given_name,
                 lastName: addInfo.profile.family_name,
@@ -55,7 +55,10 @@ export class SignInModal extends Component {
                 },
                 accountCreated: firebase.firestore.Timestamp.now(),
                 membershipTier: "Basic",
-                userUploads: []
+                userUploads: {
+                    init: false,
+                    videoData: []    
+                }
             });
             this.props.loginModalClose(addInfo.isNewUser)
         }).catch((error) => {
@@ -97,7 +100,10 @@ export class SignInModal extends Component {
                     },
                     accountCreated: firebase.firestore.Timestamp.now(),
                     membershipTier: "Basic",
-                    userUploads: []
+                    userUploads: {
+                        init: false,
+                        videoData: []    
+                    }
                 })
                 .then(this.props.loginModalClose(userCredential.additionalUserInfo.isNewUser))
             } else {

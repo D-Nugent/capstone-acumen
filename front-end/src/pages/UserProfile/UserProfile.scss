@@ -8,7 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10vw;
+    padding: 5vw 10vw;
 
     &__container{
         width: 100%;
@@ -29,8 +29,7 @@
             flex-direction: column;
 
             &-card{
-                width: 20vw;
-                min-width: 240px;
+                width: 248px;
                 height: fit-content;
                 background-color: #FFF;
                 border-radius: 24px;
@@ -83,7 +82,6 @@
                 }
     
                 &-details{
-                    // padding: 16px;
                     padding: 16px 16px 0;
                     background-color: #FFF;
                     border-top-left-radius: 24px;
@@ -240,7 +238,6 @@
                     }
                     &-values{
                         margin: 0;
-                        overflow: scroll;
 
                         &-edit{
                             width: 100%;
