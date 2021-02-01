@@ -3,9 +3,12 @@ import {videoRef,imageRef} from '../../firebase';
 import {fireDB} from '../../firebase';
 import firebase from 'firebase/app';
 import {firebaseContext} from '../../provider/FirebaseProvider';
-import {v4 as uuidv4} from 'uuid'
+import {v4 as uuidv4} from 'uuid';
+import ProductionNav from '../../components/ProductionNav/ProductionNav';
 import addIcon from '../../assets/icons/add1.svg';
 // import addIconFocus from '../../assets/icons/add2.svg';
+import recordIcon from '../../assets/icons/record.svg'
+import stopIcon from '../../assets/icons/stop.svg'
 import editIcon from '../../assets/icons/edit.svg';
 import deleteIcon from '../../assets/icons/delete.svg';
 import './Studio.scss'
@@ -19,6 +22,7 @@ function Studio() {
     videoQuestions: [],
   })
   const {user, dataLoad} = useContext(firebaseContext);
+  const [interviewStage,setinterviewStage] = useState("setup")
   const [recording, setRecording] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -89,7 +93,7 @@ function Studio() {
     const options = videoDevices.map(videoDevice => {
       return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`;
     });
-    document.querySelector('.video-select').innerHTML = options.join('')
+    document.querySelector('#camera-select').innerHTML = options.join('')
   }
   const getMicrophoneSelection = async () => {
     const devices = await navigator.mediaDevices.enumerateDevices();
@@ -97,7 +101,7 @@ function Studio() {
     const options = micDevices.map(micDevice => {
       return `<option value="${micDevice.deviceId}">${micDevice.label}</option>`;
     });
-    document.querySelector('.mic-select').innerHTML = options.join('')
+    document.querySelector('#mic-select').innerHTML = options.join('')
   }
   getCameraSelection()
   getMicrophoneSelection()
@@ -108,7 +112,7 @@ function Studio() {
     setRecording(true);
     navigator.mediaDevices.getUserMedia(constraintObj)
     .then(function(mediaStreamObj) {
-      let video = document.querySelector('.recorder__preview');
+      let video = document.querySelector('.studio__container-recorder-preview');
       if ("srcObject" in video) {
         video.srcObject = mediaStreamObj;
       } else {
@@ -117,22 +121,24 @@ function Studio() {
       video.onloadedmetadata = function(ev) {
         video.play();
       };
-      let start = document.querySelector('.recorder__actions-start')
-      let stop = document.querySelector('.recorder__actions-stop')
+      let init = document.querySelector('.studio__container-recorder-init-button')
       let mediaRecorder = new MediaRecorder(mediaStreamObj);
       let chunks = [];
-      start.addEventListener('click', ()=>{
-        mediaRecorder.start();
-        setVideoData({
-          ...videoData,
-          videoInittime: Date.now(),
-        })
-        console.log(mediaRecorder.state);
+      init.addEventListener('click', ()=>{
+        if(recording===false){
+          mediaRecorder.start();
+          setVideoData({
+            ...videoData,
+            videoInitTime: Date.now(),
+          })
+          console.log(mediaRecorder.state);
+          setRecording(true)
+        } else{
+          mediaRecorder.stop();
+          console.log(mediaRecorder.state);
+          setRecording(false)
+        }
       })
-      stop.addEventListener('click', ()=>{
-        mediaRecorder.stop();
-        console.log(mediaRecorder.state);
-      });
       mediaRecorder.ondataavailable = (streamData) =>{
         chunks.push(streamData.data);
       }
@@ -160,9 +166,7 @@ function Studio() {
       if (track.readyState === 'live') {
         track.stop();
       }
-
       let vidDuration = Math.floor((videoData.videoEndTime - videoData.videoInitTime)/1000)
-
       console.log(vidDuration);
     })
   }
@@ -171,31 +175,65 @@ function Studio() {
     event.target.setAttribute('qInit', Date.now());
     const itemTime = event.target.getAttribute('qInit');
     const timeDiff = Math.floor((itemTime - videoData.videoInitTime)/1000)
-    console.log(`The difference in time between when the video started and this question started is ${timeDiff} seconds`);
+    console.log(`The difference in time between when the video started and this question started
+     is ${timeDiff} seconds`);
+  }
+
+  const addQuestion = () => {
+    setVideoData({
+      ...videoData,
+      videoQuestions: [
+        ...videoData.videoQuestions,
+        {
+          key: uuidv4(),
+          number: videoData.videoQuestions.length+1,
+          detail:""
+        }
+      ]
+    })
   }
 
   return (
     <div className="studio">
       <div className="studio__container">
+      <ProductionNav stage={interviewStage}/>
         <div className="studio__container-recorder">
-          <video className="studio__container-recorder__preview"autoPlay muted/>
-          <div className="studio__container-recorder__actions">
+          <video className="studio__container-recorder-preview"autoPlay muted/>
+          <div className="studio__container-recorder-actions">
             {recording?
-              <button className="studio__container-recorder__actions-unlaunch" onClick={()=>{unlaunchStudio()}}>Close Studio</button>
+              <button className="studio__container-recorder-actions-unlaunch" onClick={()=>{unlaunchStudio()}}>Close Studio</button>
             :
-              <button className="studio__container-recorder__actions-launch" onClick={()=>{launchStudio()}}>Launch Studio</button>
+              <button className="studio__container-recorder-actions-launch" onClick={()=>{launchStudio()}}>Launch Studio</button>
             }
-            <button className="studio__container-recorder__actions-start">Start Recording</button>
-            <button className="studio__container-recorder__actions-stop">Stop Recording</button>
-            <button className="studio__container-recorder__actions-upload">Upload Recording</button>
+            <button className="studio__container-recorder-actions-start">Start Recording</button>
+            <button className="studio__container-recorder-actions-stop">Stop Recording</button>
+            <button className="studio__container-recorder-actions-upload">Upload Recording</button>
           </div>
-          <div className="video-options">
-            <select name="" id="" className="video-select">
-              <option value="">Select camera</option>
-            </select>
-            <select name="" id="" className="mic-select">
-              <option value="">Select microphone</option>
-            </select>
+          <div className="studio__container-recorder-devices">
+            <div className="studio__container-recorder-devices-camera">
+              <label htmlFor="camera-select" className="studio__container-recorder-devices-camera-heading">
+                Select your camera
+              </label>
+              <select name="cameras" id="camera-select" className="studio__container-recorder-devices-camera-select">
+                <option value="">No camera found</option>
+              </select>
+            </div>
+            <div className="studio__container-recorder-devices-mic">
+              <label htmlFor="mic-select" className="studio__container-recorder-devices-mic-heading">
+                Select your mic
+              </label>
+              <select name="mics" id="mic-select" className="studio__container-recorder-devices-mic-select">
+                <option value="">No microphone found</option>
+              </select>
+            </div>
+          </div>
+          <div className="studio__container-recorder-init">
+            <button className="studio__container-recorder-init-button" onClick={()=>{setinterviewStage("record")}}>
+              <img src={interviewStage==="setup"?recordIcon:stopIcon} alt="record icon" 
+              className="studio__container-recorder-init-button-icon"/>
+              {interviewStage==="setup"?"START RECORDING":"STOP RECORDING"}
+            </button>
+            {/* #ToDo - Add smoother transition between recording and stop recording icons*/}
           </div>
         </div>
       </div>
@@ -218,6 +256,15 @@ function Studio() {
             Your questions should be <span className="studio__questions-emph">1-2 sentences</span> long at most. Take some time to consider what questions would allow you to showcase
             the best of your character, skill-set and experience.
          </p> 
+         {videoData.videoQuestions.map(question => {
+          <div className="studio__questions-prompt" key={question.id}
+          onClick={(event)=>{timeTrack(event)}}>
+            <h4 className="studio__questions-prompt-number">{question.number}</h4>
+            <p className="studio__questions-prompt-question">{question.detail}</p>
+            <img src={editIcon} alt="edit icon" className="studio__questions-prompt-edit"/>
+            <img src={deleteIcon} alt="delete icon" className="studio__questions-prompt-delete"/>
+          </div>
+         })}
         <div className="studio__questions-prompt" onClick={(event)=>{timeTrack(event)}}>
           <h4 className="studio__questions-prompt-number">01</h4>
           <p className="studio__questions-prompt-question">Where do you see yourself in five years?</p>
@@ -230,7 +277,7 @@ function Studio() {
           <img src={editIcon} alt="edit icon" className="studio__questions-prompt-edit"/>
           <img src={deleteIcon} alt="delete icon" className="studio__questions-prompt-delete"/>
         </div>
-        <div className="studio__questions-prompt --add">
+        <div className="studio__questions-prompt --add" onClick={()=>{addQuestion()}}>
             <img src={addIcon} alt="add icon" className="studio__questions-prompt-icon"/>
             {/* #ToDo: Decide if you want to come back and adjust icon to change on hover state see import above */}
           <p className="studio__questions-prompt-question">Add a new question</p>

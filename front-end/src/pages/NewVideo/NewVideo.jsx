@@ -89,7 +89,7 @@ export default function NewVideo () {
           </ul>
         </div>
         <div className="launch__start">
-          <button className="launch__start-button" onClick={()=>{setProductionState("setup")}}>LETS GET STARTED</button>
+          <button className="launch__start-button" onClick={()=>{setProductionState("create")}}>LETS GET STARTED</button>
         </div>
       </div>
       }

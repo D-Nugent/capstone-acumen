@@ -1,0 +1,52 @@
+@import '../../styles/global';
+
+@keyframes chevron-shift {
+    0% {transform: translateX(0)};
+    50% {transform: translateX(4px)};
+    100% {transform: translateX(0)};
+}
+
+.prodnav{
+    width: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    &__container{
+        display: flex;
+        align-items: center;
+        opacity: 0.6;
+
+        &-numerical{
+            background-color: $themeSlateContrastTertiary;
+            height: 32px;
+            width: 32px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            &-value{
+                margin: 0;
+                color: $themeSlateOffsetPrimary;
+                margin-bottom: 4px;
+            }
+        }
+
+        &-heading{
+            margin-left: 8px;
+        }
+
+        &-chevron{
+            height: 24px;
+        }
+
+        &.--active{
+            opacity: 1;
+
+            & > img{
+                animation: chevron-shift 2s linear infinite ;
+            }
+        }
+    }
+}
