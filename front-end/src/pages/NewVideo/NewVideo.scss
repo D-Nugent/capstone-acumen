@@ -2,13 +2,13 @@
 
 .newvideo{
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     background-color: $themeSlateOffsetPrimary;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 5vw 10vw;
+    padding: 5vw 10vw 0;
 
     &__overview{
         width: 100%;

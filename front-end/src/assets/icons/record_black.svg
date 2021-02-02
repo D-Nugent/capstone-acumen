@@ -36,15 +36,15 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1366"
-     inkscape:window-height="705"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
      id="namedview8"
      showgrid="false"
      inkscape:zoom="22.416667"
      inkscape:cx="12"
      inkscape:cy="12"
-     inkscape:window-x="1149"
-     inkscape:window-y="1072"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg6"
      inkscape:document-rotation="0" />
@@ -57,5 +57,5 @@
      cy="12"
      r="8"
      id="circle4"
-     style="fill:#4cb69f;fill-opacity:1;opacity:0.99500004" />
+     style="fill:#3f3f3f;fill-opacity:1;opacity:0.99500004" />
 </svg>
