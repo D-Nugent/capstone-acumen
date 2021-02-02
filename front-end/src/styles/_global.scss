@@ -5,13 +5,13 @@
 
 // ---Global Reset 
 
-html, body, ul {
+html, body{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     scroll-behavior: smooth;
-    height: 100%;
-      
+    min-height: 100%;
+    height: fit-content;      
   }
   
   *, *:before, *:after {

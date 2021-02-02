@@ -2,13 +2,13 @@
 
 .newvideo{
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     background-color: $themeSlateOffsetPrimary;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 10vw;
+    padding: 5vw 10vw 0;
 
     &__overview{
         width: 100%;
@@ -29,118 +29,77 @@
             margin: 0;
         }
     }
-    &__container{
-        display: flex;
-        width: 100%;
-        height: 100%;
-        flex-direction: column;
-
-        @include desktop-adapt{
-            flex-direction: row;
-        }
-
-        &-studio{
-            height: 50%;
-            width: 100%;
-
-            @include desktop-adapt{
-                height: 100%;
-                width: 65%;
-            }
-        }
-
-        &-controls{
-            height: 50%;
-            width: 100%;
-
-            @include desktop-adapt{
-                height: 100%;
-                width: 35%;
-            }
-
-            &-prompt{
-                width: 100%;
-                height: 48px;
-                background-color: #FFF;
-                box-shadow: 4px 4px 4px $themeSlatePrimary;
-                border-radius: 24px;
-                display: flex;
-                align-items: center;
-                padding: 4px 8px 4px 0;
-                margin: 16px 0;
-                
-                &-number{
-                    margin: 0 16px 0 0;
-                    background-color: $themeSlateContrastTertiary;
-                    color: #FFF;
-                    height: 48px;
-                    min-width: 40px;
-                    border-top-left-radius: 24px;
-                    border-bottom-left-radius: 24px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 1.25rem;
-                }
-
-                &.--add{
-
-                    & img, p{
-                        opacity: 0.6;
-                        font-family: "Raleway";
-                        font-weight: 600;
-                    }
-
-                    &:hover{
-                        cursor: pointer;
-                    }
-
-                    &:hover *{
-                        opacity: 1;
-                    }
-                }
-
-                &-icon{
-                    height: 32px;
-                    margin: 0 0 0 30%;
-                }
-
-                &-question{
-                    font-size: .75rem;
-                    width: 69%;
-                }
-                &-edit{
-                    height: 20px;
-                    width: 20px;
-
-                    &:hover{
-                        cursor: pointer;
-                    }
-                }
-                &-delete{
-                    height: 20px;
-                    width: 20px;
-
-                    &:hover{
-                        cursor: pointer;
-                    }
-                }
-            }
-        }
-    }
 }
 
-.recorder{
-    display: flex;
-    flex-direction: column;
+.launch{
+    height: 100%;
+    width: 100%;
 
-    &__preview{
-        width: 70%;
+    &__firstinit{
+        font-weight: 600;
+        background-color: #FFF;
+        padding: 16px;
+        margin-top: 0;
+        border-radius: 24px;
+        box-shadow: 4px 4px 8px $themeSlatePrimary;
     }
-    &__player{
-        width: 70%;
+
+    &-emph{
+        color: $themeSlateContrastTertiary;
+        font-weight: 800;
+        text-decoration: none;
+        
+        &.--heading{
+            color: $themeSlatePrimary;
+        }
     }
-    &__actions{
+
+    &__start{
+        width: 100%;
         display: flex;
+        justify-content: center;
+
+        &-button{
+            background-color: $themeSlateContrastTertiary;
+            color: $themeSlateOffsetPrimary;
+            border-radius: 4px;
+            border-color: $themeSlateContrastTertiary;
+            padding: 2px 8px;
+            
+            &:hover{
+                cursor: pointer;
+            }
+        }
+    }
+
+    &__overview{
+        &-desc{
+            font-weight: 600;
+            padding-left: 0;
+
+            &-consider{
+                font-weight: 400;
+                margin: 8px 0 0 24px;
+                padding: 0;
+                font-size: .9375rem;
+
+                &> ul{
+                    padding-left: 26px;
+                }
+
+                &-point{
+                    list-style: none;
+                    margin: 8px 0;
+                    font-size: .875rem;
+                    line-height: 1.4rem;
+                    align-content: center;
+                                        
+                    &-icon{
+                        height: 20px;
+                        width: 20px;
+                    }
+                }
+            }
+        }
     }
 }

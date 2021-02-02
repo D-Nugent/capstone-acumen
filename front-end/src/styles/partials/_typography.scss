@@ -1,13 +1,15 @@
 @import "./variables";
 
 // Typography Reset
-html, body, textarea, button {
+html, body, input, textarea, button {
     color: $themeSlatePrimary;
-    font-family: 'Zilla Slab', 'Josefin Slab', 'Perpetua', 'Garamond', serif;
+    font-family: 'Raleway', 'Ubuntu', 'Calibri', 'Verdana', sans-serif;
+    // font-family: 'Zilla Slab', 'Josefin Slab', 'Perpetua', 'Garamond', serif;
     
     & h1, h2, h3, h4, h5, h6 {
         font-family: 'Raleway', 'Ubuntu', 'Calibri', 'Verdana', sans-serif;
     }
+    /* #ToDo - Decide if you will utilize two fonts or not*/
 }
 
 // Fonts

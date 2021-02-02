@@ -1,5 +1,6 @@
 @import '../../styles/global';
 
+
 .userprofile{
     width: 100%;
     height: 100%;
@@ -7,7 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10vw;
+    padding: 5vw 10vw;
 
     &__container{
         width: 100%;
@@ -28,8 +29,7 @@
             flex-direction: column;
 
             &-card{
-                width: 20vw;
-                min-width: 240px;
+                width: 248px;
                 height: fit-content;
                 background-color: #FFF;
                 border-radius: 24px;
@@ -42,6 +42,9 @@
                     background-color: $themeSlateOffsetSecondary;
                     border-top-left-radius: 24px;
                     border-top-right-radius: 24px;
+                    height: 240px;
+                    object-fit: cover;
+                    object-position: top;
                 }
 
                 &-upload{
@@ -57,6 +60,10 @@
                     border-top-left-radius: 24px;
                     border-top-right-radius: 24px;
                     opacity: 0.6;
+
+                    &-mgr{
+                        display: none;
+                    }
 
                     &-icon{
                         height: 80px;
@@ -75,7 +82,6 @@
                 }
     
                 &-details{
-                    // padding: 16px;
                     padding: 16px 16px 0;
                     background-color: #FFF;
                     border-top-left-radius: 24px;
@@ -110,23 +116,31 @@
 
                     &-edit{
                         &-name{
-                            margin: 2px 0;
+                            margin: 4px 0;
                             outline: none;
+                            border: none;
+                            background-color: $themeSlateOffsetPrimary;
 
                             &:focus{
-                                background-color: $themeSlateOffsetPrimary;
+                                border-bottom: 1px inset $themeSlatePrimary;
                             }
                         }
                         &-email{
                             outline: none;
+                            border: none;
+                            background-color: $themeSlateOffsetPrimary;
+
                             &:focus{
-                                background-color: $themeSlateOffsetPrimary;
+                                border-bottom: 1px inset $themeSlatePrimary;
                             }
                         }
                         &-phone{
                             outline: none;
+                            border: none;
+                            background-color: $themeSlateOffsetPrimary;
+
                             &:focus{
-                                background-color: $themeSlateOffsetPrimary;
+                                border-bottom: 1px inset $themeSlatePrimary;
                             }
                         }
                     }
@@ -145,10 +159,16 @@
                 font-weight: 600;
                 user-select: none;
                 box-shadow: 4px 4px 4px $themeSlatePrimary;
+                margin: 2px 0;
 
                 &:hover{
                     cursor: pointer;
                 }
+            }
+            &-cancel{
+                @extend .userprofile__container-profile-editsave;
+                background-color: $themeSlateOffsetPrimary;
+                color: $themeSlateContrastTertiary;
             }
         }
 
@@ -198,17 +218,21 @@
                 &-detail{
                     margin: 8px 0;
                     width: 100%;
-
+                    
                     &-heading{
                         margin: 8px 0;
+                        border-bottom: 1px inset $themeSlateContrastTertiary;
+                        padding-bottom: 2px;
 
                         &-edit{
                             margin: 16px 0 8px;
                             width: 248px;
                             outline: none;
+                            border: none;
+                            background-color: $themeSlateOffsetPrimary;
                             
                             &:focus{
-                                background-color: $themeSlateOffsetPrimary;
+                                border-bottom: 1px inset $themeSlatePrimary;
                             }
                         }
                     }
@@ -223,9 +247,11 @@
                             height: 80px;
                             max-height: 120px;
                             outline: none;
+                            background-color: $themeSlateOffsetPrimary;
+                            border: none;
 
                             &:focus{
-                                background-color: $themeSlateOffsetPrimary;
+                                border: 1px inset $themeSlatePrimary;
                             }
                         }
                     }
@@ -247,9 +273,11 @@
                             height: 120px;
                             max-height: 370px;
                             outline: none;
+                            background-color: $themeSlateOffsetPrimary;
+                            border: none;
 
                             &:focus{
-                                background-color: $themeSlateOffsetPrimary;
+                                border: 1px inset $themeSlatePrimary;
                             }
                         }
                     }

@@ -40,20 +40,25 @@ export class SignInModal extends Component {
             const token = credential.accessToken;
             const user = result.user;
             const addInfo = result.additionalUserInfo;
-            addInfo.isNewUser === false &&
+            addInfo.isNewUser === true &&
             fireDB.collection("usersTwo").doc(user.uid).set({
                 firstName: addInfo.profile.given_name,
                 lastName: addInfo.profile.family_name,
                 profile: {
                     email: user.email,
-                    aboutMe: "I'm new to Acumen, watch this space!"
+                    phone: '',
+                    aboutMe: '',
+                    experience:[],
                 },
-                profileImageSrc: addInfo.profile.picture,
+                profileImageSrc:{
+                    blob: addInfo.profile.picture, 
+                },
                 accountCreated: firebase.firestore.Timestamp.now(),
                 membershipTier: "Basic",
-                userUploads: [
-                   "Nothing to see here.", 
-                ]
+                userUploads: {
+                    init: false,
+                    videoData: []    
+                }
             });
             this.props.loginModalClose(addInfo.isNewUser)
         }).catch((error) => {
@@ -86,13 +91,19 @@ export class SignInModal extends Component {
                     lastName: userLastName,
                     profile: {
                         email: user.email,
-                        aboutMe: "I'm new to Acumen, watch this space!"
+                        phone: '',
+                        aboutMe:'',
+                        experience:[],
+                    },
+                    profileImageSrc:{
+                        blob: "", 
                     },
                     accountCreated: firebase.firestore.Timestamp.now(),
                     membershipTier: "Basic",
-                    userUploads: [
-                       "Nothing to see here.", 
-                    ]
+                    userUploads: {
+                        init: false,
+                        videoData: []    
+                    }
                 })
                 .then(this.props.loginModalClose(userCredential.additionalUserInfo.isNewUser))
             } else {
@@ -105,9 +116,7 @@ export class SignInModal extends Component {
                     },
                     accountCreated: firebase.firestore.Timestamp.now(),
                     membershipTier: "Basic",
-                    interviewEnvironments: [
-                       "Nothing to see here.", 
-                    ]
+                    interviewEnvironments: []
                 })
                 .then(this.props.loginModalClose(userCredential.additionalUserInfo.isNewUser))
             }

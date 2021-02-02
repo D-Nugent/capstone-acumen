@@ -5,6 +5,7 @@ export class ViewVideo extends Component {
         return (
             <div>
                 <p>This is the page for viewing an uploaded video</p>
+                  <video className="recorder__player" controls autoPlay controlsList="nodownload"/>
             </div>
         )
     }

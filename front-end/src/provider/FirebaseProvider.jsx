@@ -39,8 +39,30 @@ function FirebaseProvider(props) {
     setUser(null)
     }
 
+    const updateEmailAddress = (email) => {
+        fireAuth.currentUser.updateEmail(email).then(function(){
+            console.log("Update Successfull");
+        }).catch(function(error){
+            console.error(error);
+        })
+    }
+
+    const dataUpdate = (data) => {
+        setDataLoad({loaded: true, userData: data})
+        console.log("Local Data was updated");
+    }
+
+    /* #ToDo - Implement Realtime listening for appropriate sections*/
+    // const dataMonitor = (collection,document) => {
+    //     let unsubscribe = fireDB.collection(collection).doc(document).onSnapshot(function(doc){
+    //         setDataLoad({loaded: true, userData: doc.data()})
+    //     })
+    //     unsubscribe()
+    // }
+
+
     return (
-        <firebaseContext.Provider value={{user,dataLoad,processSignOut}}>
+        <firebaseContext.Provider value={{user,dataLoad,dataUpdate,processSignOut,updateEmailAddress}}>
             {props.children}
         </firebaseContext.Provider>
     )
