@@ -101,8 +101,8 @@ function Studio() {
     });
     document.querySelector('#mic-select').innerHTML = options.join('')
   }
-  getCameraSelection()
-  getMicrophoneSelection()
+  // getCameraSelection()
+  // getMicrophoneSelection()
   // #To-Do: If possible, update constraints so that they change on user selection. Reference this:
   //https://www.digitalocean.com/community/tutorials/front-and-rear-camera-access-with-javascripts-getusermedia
 
