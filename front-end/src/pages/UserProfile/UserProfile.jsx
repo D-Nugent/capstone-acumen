@@ -35,9 +35,9 @@ function UserProfile() {
       email: dataLoad.userData.profile.email,
       phone: dataLoad.userData.profile.phone,
       aboutMe: dataLoad.userData.profile.aboutMe,
-      experienceOne: dataLoad.userData.profile.experience.length>=1?dataLoad.userData.profile.experience[0]:"",
-      experienceTwo: dataLoad.userData.profile.experience.length>=2?dataLoad.userData.profile.experience[1]:"",
-      experienceThree: dataLoad.userData.profile.experience.length>=3?dataLoad.userData.profile.experience[2]:"",
+      experienceOne: dataLoad.userData.profile.experience.length>=1?dataLoad.userData.profile.experience[0]:{},
+      experienceTwo: dataLoad.userData.profile.experience.length>=2?dataLoad.userData.profile.experience[1]:{},
+      experienceThree: dataLoad.userData.profile.experience.length>=3?dataLoad.userData.profile.experience[2]:{},
     })
 
   const toggleProfileDetail = () => {
@@ -82,7 +82,7 @@ function UserProfile() {
         })
       }
       /* #ToDo - Need to fix concat AGAIN*/
-      let experienceArray = profileData.experienceOne.concat(profileData.experienceTwo,profileData.experienceThree);
+      let experienceArray = [profileData.experienceOne,profileData.experienceTwo,profileData.experienceThree];
       fireDB.collection("usersTwo").doc(user.uid).update({
         firstName: profileData.firstName,
         lastName: profileData.lastName,
@@ -115,9 +115,9 @@ function UserProfile() {
       email: dataLoad.userData.profile.email,
       phone: dataLoad.userData.profile.phone,
       aboutMe: dataLoad.userData.profile.aboutMe,
-      experienceOne: dataLoad.userData.profile.experience.length>=1?dataLoad.userData.profile.experience[0]:"",
-      experienceTwo: dataLoad.userData.profile.experience.length>=2?dataLoad.userData.profile.experience[1]:"",
-      experienceThree: dataLoad.userData.profile.experience.length>=3?dataLoad.userData.profile.experience[2]:"",
+      experienceOne: dataLoad.userData.profile.experience.length>=1?dataLoad.userData.profile.experience[0]:{},
+      experienceTwo: dataLoad.userData.profile.experience.length>=2?dataLoad.userData.profile.experience[1]:{},
+      experienceThree: dataLoad.userData.profile.experience.length>=3?dataLoad.userData.profile.experience[2]:{},
     });
     setPhotoUpload({
       ...photoUpload,
@@ -176,6 +176,18 @@ function UserProfile() {
 
   console.log(dataLoad);
   console.log(user);
+
+  const videoDurationCalc = (duration)=> {
+    let seconds = Math.floor((duration / 1000) % 60),
+    minutes = Math.floor((duration / (1000 * 60)) % 60),
+    hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+    hours = (hours < 10) ? `0${hours}` : hours;
+    minutes = (minutes <10) ? `0${minutes}` : minutes;
+    seconds = (seconds <10) ? `0${seconds}` : seconds;
+    return hours==="00"?minutes==="00"?`${seconds}s`:`${minutes}:${seconds}`:`${hours}:${minutes}:${seconds}`
+  }
+
   return (
     <div className="userprofile">
         <div className="userprofile__container">
@@ -335,6 +347,24 @@ function UserProfile() {
                       return(
                         <Link className="userprofile__container-content-uploads-stack-card" to={`/user/${user.uid}/${upload.videoId}`} key={upload.videoId}>
                             <h4 className="userprofile__container-content-uploads-stack-card-title">{upload.title}</h4>
+                            <div className="userprofile__container-content-uploads-stack-card-details">
+                              <p className="userprofile__container-content-uploads-stack-card-details-value">
+                                <span className="userprofile__container-content-uploads-emph">Duration: </span>
+                                {videoDurationCalc(upload.videoEndTime - upload.videoInitTime)}
+                                </p>
+                              <p className="userprofile__container-content-uploads-stack-card-details-value">
+                                <span className="userprofile__container-content-uploads-emph">No. of questions: </span>
+                                {upload.videoQuestions.length}
+                              </p>
+                              <p className="userprofile__container-content-uploads-stack-card-details-value">
+                                <span className="userprofile__container-content-uploads-emph">Created: </span>
+                                {new Date(upload.videoInitTime).toLocaleDateString(undefined,{day:'numeric', month:'numeric', year:'numeric'})}
+                              </p>
+                              <p className="userprofile__container-content-uploads-stack-card-details-value">
+                                <span className="userprofile__container-content-uploads-emph">No. of views: </span>
+                                3
+                              </p>
+                            </div>
                         </Link>
                       )
                     })}

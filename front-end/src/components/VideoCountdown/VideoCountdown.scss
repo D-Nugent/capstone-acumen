@@ -1,0 +1,118 @@
+@import '../../styles/global';
+
+@keyframes count {
+    0% { transform: rotate(0deg)  }
+    100% { transform: rotate(45deg)  }
+  }
+@keyframes count-a {
+    0% { transform: rotate(0deg)  }
+    100% { transform: rotate(90deg)  }
+  }
+@keyframes count-b {
+    0% { transform: rotate(0deg)  }
+    100% { transform: rotate(135deg)  }
+  }
+@keyframes count-c {
+    0% { transform: rotate(0deg)  }
+    100% { transform: rotate(180deg)  }
+  }
+@keyframes count-d {
+    0% { transform: rotate(0deg)  }
+    100% { transform: rotate(225deg)  }
+  }
+@keyframes count-e {
+    0% { transform: rotate(0deg)  }
+    100% { transform: rotate(270deg)  }
+  }
+@keyframes count-f {
+    0% { transform: rotate(0deg)  }
+    100% { transform: rotate(315deg)  }
+  }
+
+.countdown {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: $themeSlateSecondary;
+  z-index: 1;
+
+  &__text{
+    color: $themeSlateOffsetPrimary
+  }
+
+  &__wrapper{
+    position: relative;
+  }
+
+  &__animation {
+    border: 12px solid transparent;
+    border-top: 12px solid $themeSlatePrimary;
+    transform: rotate(45deg);
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    position: absolute;
+    // animation: spin 2s linear infinite;
+    
+    &-1{
+      @extend .countdown__animation;
+      border-top: 12px solid $themeSlateContrastTertiary;
+      position: absolute;
+      animation: count 1s linear infinite;
+    }
+    &-2{
+      @extend .countdown__animation;
+      border-top: 12px solid $themeSlateContrastTertiary;
+      position: absolute;
+      animation: count-a 1s linear infinite;
+    }
+    &-3{
+      @extend .countdown__animation;
+      border-top: 12px solid $themeSlateContrastTertiary;
+      position: absolute;
+      animation: count-b 1s linear infinite;
+    }
+    &-4{
+      @extend .countdown__animation;
+      border-top: 12px solid $themeSlateContrastTertiary;
+      position: absolute;
+      animation: count-c 1s linear infinite;
+    }
+    &-5{
+      @extend .countdown__animation;
+      border-top: 12px solid $themeSlateContrastTertiary;
+      position: absolute;
+      animation: count-d 1s linear infinite;
+    }
+    &-6{
+      @extend .countdown__animation;
+      border-top: 12px solid $themeSlateContrastTertiary;
+      position: absolute;
+      animation: count-e 1s linear infinite;
+    }
+    &-7{
+      @extend .countdown__animation;
+      border-top: 12px solid $themeSlateContrastTertiary;
+      position: absolute;
+      animation: count-f 1s linear infinite;
+    }
+  }
+
+  &__phrase {
+    color: #FFF;
+    position: relative;
+    }
+
+    &__value {
+    color: $themeSlateContrastTertiary;
+    font-size: 4rem;
+    position: relative;
+    bottom: 32px;
+    }
+}
+

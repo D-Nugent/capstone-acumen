@@ -28,10 +28,15 @@
     &-recorder{
       display: flex;
       flex-direction: column;
-      
-      &-preview{
+
+      &-wrapper{
+        position: relative;
         width: 90%;
-        background-color: $themeSlateSecondary;
+
+        &-preview{
+          width: 100%;
+          background-color: $themeSlateSecondary;
+        }
       }
 
       &-actions{

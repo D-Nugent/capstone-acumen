@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect, useRef} from 'react';
 import {videoRef,imageRef} from '../../firebase';
 import {fireDB} from '../../firebase';
 import firebase from 'firebase/app';
@@ -14,41 +14,75 @@ import editIcon from '../../assets/icons/edit.svg';
 import deleteIcon from '../../assets/icons/delete.svg';
 import saveIcon from '../../assets/icons/save.svg';
 import './Studio.scss'
+import VideoCountdown from '../VideoCountdown/VideoCountdown';
 
 function Studio() {
   const [videoData, setVideoData] = useState({
     videoTitle: "",
-    videoFile: null,
     videoId: null,
     videoInitTime: null,
     videoEndTime: null,
     videoQuestions: [],
-  })
+  });
+  const currentQuestions = useRef();
+  currentQuestions.current = videoData.videoQuestions;
   const {user, dataLoad} = useContext(firebaseContext);
   const [interviewStage,setInterviewStage] = useState("setup");
   const [titleEdit,setTitleEdit] = useState(false);
   const [recording, setRecording] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-
-
-  const uploadVideoRef = videoRef.child(user.uid).child(`${videoData.videoId}${videoData.videoTitle}.mp4`)
-  // #ToDo - Ensure that dynamic videoId is working as intended
+  const [showCounter, setShowCounter] = useState(false);
+  const [userDevices,setUserDevices] = useState({
+    userCamera: null,
+    userMic: null
+  })
   let constraintObj = {
-    audio: true,
+    audio: {
+      deviceId: {
+        exact: userDevices.userMic,
+      }
+    },
     video: {
+      deviceId: {
+        exact: userDevices.userCamera,
+      },
       facingMode: "user",
       width: {min: 640, ideal: 1280, max: 1920},
       height: {min: 480, ideal: 720, max: 1080}
     }
   }
-  const uploadVideoBlob = (blob) => {
-    setVideoData({
-      ...videoData,
-      videoEndTime: Date.now(),
+
+  useEffect(()=>{
+    getUserDevices();
+  }, [])
+
+  const getUserDevices = async () => {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const videoDevices = devices.filter(device => device.kind === 'videoinput');
+    const micDevices = devices.filter(device => device.kind === 'audioinput');
+    const vidOptions = videoDevices.map(videoDevice => {
+      return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`;
+    });
+    const micOptions = micDevices.map(micDevice => {
+      return `<option value="${micDevice.deviceId}">${micDevice.label}</option>`;
+    });
+    document.querySelector('#camera-select').innerHTML = vidOptions.join('');
+    document.querySelector('#mic-select').innerHTML = micOptions.join('');
+    setUserDevices({
+      userCamera: videoDevices[0].deviceId,
+      userMic: micDevices[0].deviceId
     })
+  }
+  
+  // #To-Do: If possible, update constraints so that they change on user selection. Reference this:
+  //https://www.digitalocean.com/community/tutorials/front-and-rear-camera-access-with-javascripts-getusermedia
+
+
+  const uploadVideoBlob = (blob, videoId, videoInitTime, videoEndTime) => {
     const metadata = {
       contentType: 'video/mp4'
     }
+    const uploadVideoRef = videoRef.child(user.uid).child(`${videoId} - ${videoData.videoTitle}.mp4`)
     const uploadTask = uploadVideoRef.put(blob,metadata)
     uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,(snapshot) => {
       const progress = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
@@ -67,50 +101,29 @@ function Studio() {
     }, function() {
       uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL){
         console.log(`File available at ${downloadURL}`);
-        let videoId = uuidv4()
-        fireDB.collection("usersTwo").doc(user.uid).set({
-          userUploads:[
+        fireDB.collection("usersTwo").doc(user.uid).update({
+          userUploads: firebase.firestore.FieldValue.arrayUnion(
             {
               title: videoData.videoTitle,
               videoId: videoId,
               videoSrc: downloadURL,
-              videoInitTime: videoData.videoInitTime,
-              videoEndTime: videoData.videoEndTime,
-              videoQuestions: videoData.videoQuestions
-            }
-          ]
-        }, {merge: true})
+              videoInitTime: videoInitTime,
+              videoEndTime: videoEndTime,
+              videoQuestions: currentQuestions.current
+            },
+          )
+        })
       });
     }
     )
   }
 
-  const getCameraSelection = async () => {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoDevices = devices.filter(device => device.kind === 'videoinput');
-    const options = videoDevices.map(videoDevice => {
-      return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`;
-    });
-    document.querySelector('#camera-select').innerHTML = options.join('')
-  }
-  const getMicrophoneSelection = async () => {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const micDevices = devices.filter(device => device.kind === 'audioinput');
-    const options = micDevices.map(micDevice => {
-      return `<option value="${micDevice.deviceId}">${micDevice.label}</option>`;
-    });
-    document.querySelector('#mic-select').innerHTML = options.join('')
-  }
-  // getCameraSelection()
-  // getMicrophoneSelection()
-  // #To-Do: If possible, update constraints so that they change on user selection. Reference this:
-  //https://www.digitalocean.com/community/tutorials/front-and-rear-camera-access-with-javascripts-getusermedia
-
   const launchStudio = () => {
+    console.log(videoData);
     setInterviewStage("record");
     navigator.mediaDevices.getUserMedia(constraintObj)
     .then(function(mediaStreamObj) {
-      let video = document.querySelector('.studio__container-recorder-preview');
+      let video = document.querySelector('.studio__container-recorder-wrapper-preview');
       if ("srcObject" in video) {
         video.srcObject = mediaStreamObj;
       } else {
@@ -124,13 +137,22 @@ function Studio() {
       let mediaRecorder = new MediaRecorder(mediaStreamObj);
       let chunks = [];
       console.log(mediaRecorder.state);
+      let videoId = uuidv4();
+      let videoInitTime;
+      let videoEndTime;
       start.addEventListener('click', ()=>{
+        setShowCounter(true);
+        setTimeout(() => {
+          setShowCounter(false);
           mediaRecorder.start();
+          videoInitTime = Date.now();
           setRecording(true);
+        }, 4000);
       end.addEventListener('click', () => {
         console.log(mediaRecorder.state);
         console.log("Start Media Ran");
         mediaRecorder.stop();
+        videoEndTime = Date.now();
         setRecording(false);
         let stream = video.srcObject;
         stream.getTracks().forEach(function(track){
@@ -148,11 +170,7 @@ function Studio() {
         chunks = [];
         let videoURL = window.URL.createObjectURL(blob);
         console.log(videoURL);
-        setVideoData({
-          ...videoData,
-          videoFile: blob
-        })
-        uploadVideoBlob(blob);
+        uploadVideoBlob(blob, videoId, videoInitTime, videoEndTime);
       };
     })
     .catch(function(err) {
@@ -164,13 +182,12 @@ function Studio() {
     let questionId = event.currentTarget.getAttribute("data-id");
     event.target.setAttribute('qInit', Date.now());
     const itemTime = event.target.getAttribute('qInit');
-    const timeDiff = Math.floor((itemTime - videoData.videoInitTime)/1000)
     let questionClone = Object.assign([],videoData.videoQuestions)
     let indexPos = questionClone.findIndex(question => question.id===questionId);
     let targetedValue = questionClone[indexPos]
     targetedValue = {
       ...targetedValue,
-      qInit: timeDiff
+      qInit: itemTime
     };
     questionClone.splice(indexPos,1,targetedValue).shift();
     setVideoData({
@@ -192,7 +209,7 @@ function Studio() {
         {
           id: uuidv4(),
           detail:"",
-          editState: false
+          editState: true
         }
       ]
     })
@@ -265,6 +282,20 @@ function Studio() {
     setTitleEdit(false);
   }
 
+  const cameraChangeHandler=(event)=>{
+    setUserDevices({
+      ...userDevices,
+      userCamera: event.target.value,
+    });
+  }
+
+  const micChangeHandler=(event)=>{
+    setUserDevices({
+      ...userDevices,
+      userMic: event.target.value,
+    });
+  }
+
   console.log(dataLoad.userData);
   console.log(videoData);
   return (
@@ -272,13 +303,17 @@ function Studio() {
       <div className="studio__container">
       <ProductionNav stage={interviewStage}/>
         <div className="studio__container-recorder">
-          <video className="studio__container-recorder-preview"autoPlay muted/>
+          <div className="studio__container-recorder-wrapper">
+          <video className="studio__container-recorder-wrapper-preview"autoPlay muted/>
+          {showCounter===true && <VideoCountdown/>}
+          </div>
           <div className={`studio__container-recorder-devices${interviewStage!=="setup"?" --disable":""}`}>
             <div className="studio__container-recorder-devices-camera">
               <label htmlFor="camera-select" className="studio__container-recorder-devices-camera-heading">
                 Select your camera
               </label>
-              <select name="cameras" id="camera-select" className="studio__container-recorder-devices-camera-select">
+              <select name="cameras" id="camera-select" className="studio__container-recorder-devices-camera-select"
+              onChange={(event)=>{cameraChangeHandler(event)}}>
                 <option value="">No camera found</option>
               </select>
             </div>
@@ -286,7 +321,8 @@ function Studio() {
               <label htmlFor="mic-select" className="studio__container-recorder-devices-mic-heading">
                 Select your mic
               </label>
-              <select name="mics" id="mic-select" className="studio__container-recorder-devices-mic-select">
+              <select name="mics" id="mic-select" className="studio__container-recorder-devices-mic-select"
+              onChange={(event)=>{micChangeHandler(event)}}>
                 <option value="">No microphone found</option>
               </select>
             </div>
@@ -407,7 +443,8 @@ function Studio() {
          }
          {videoData.videoQuestions.map((question,index) => {
            return (
-            <div className={`studio__questions-prompt${interviewStage==="record"&&index!==0?" --inactive":""}`}
+            <div className={`studio__questions-prompt${interviewStage==="record"&&index!==0?" --inactive"
+            :interviewStage==="record"&&index===0&&recording!==true?" --inactive":""}`}
               data-id={question.id} key={question.id} onClick={(event)=>{
               interviewStage==="record" && timeTrack(event)
             }}>

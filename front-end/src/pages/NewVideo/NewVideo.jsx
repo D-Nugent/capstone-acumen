@@ -22,7 +22,6 @@ export default function NewVideo () {
       <div className="newvideo__overview">
         <div className="newvideo__overview-border"></div>
         <h2 className="newvideo__overview-heading">Upload Your Digital Resume</h2>
-        {/* #ToDo: Update description to real content */}
       </div>
       {productionStage!=="launch"&&<Studio/>}
       {productionStage==="launch"&&

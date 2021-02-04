@@ -57,7 +57,6 @@ export class SignInModal extends Component {
                 membershipTier: "Basic",
                 userUploads: {
                     init: false,
-                    videoData: []    
                 }
             });
             this.props.loginModalClose(addInfo.isNewUser)
@@ -102,7 +101,6 @@ export class SignInModal extends Component {
                     membershipTier: "Basic",
                     userUploads: {
                         init: false,
-                        videoData: []    
                     }
                 })
                 .then(this.props.loginModalClose(userCredential.additionalUserInfo.isNewUser))
