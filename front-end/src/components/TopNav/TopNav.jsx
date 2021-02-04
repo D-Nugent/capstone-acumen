@@ -25,6 +25,8 @@ function TopNav(props){
         })
     }
     
+    console.log((Date.now() -user.metadata.a)/1000);
+    console.log(props);
     return (
         <div className={`topnav${props.location.pathname!=="/"?" --launch":""}`}>
             <div className="topnav__account">

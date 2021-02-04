@@ -37,8 +37,7 @@ function App () {
   //     })
   //   })
   // }
-  /* #ToDo - Delete Data to be utilized in remov*/
-
+  /* #ToDo - Delete Data to be utilized in removing userVideo content*/
     return (
       <div className="app">
         {dataLoad.loaded === false?
