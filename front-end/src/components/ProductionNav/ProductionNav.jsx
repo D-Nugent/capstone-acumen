@@ -4,6 +4,8 @@ import './ProductionNav.scss';
 
 function ProductionNav({stage}) {
     return (
+        // This component will display conditonal progress on our video upload page, it does this by utilizing
+        // a prop which has been passed down from the New Video page
         <div className="prodnav">
             <div className={`prodnav__container${stage==="setup"?" --active":""}`}>
                 <div className="prodnav__container-numerical">
