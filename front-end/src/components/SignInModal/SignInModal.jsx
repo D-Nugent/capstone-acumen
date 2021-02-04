@@ -72,7 +72,7 @@ export class SignInModal extends Component {
     //     }}>
     //     Sign in anonymously
     //     </button>
-
+/* #ToDo - Add anonymous at a later date for employers who are viewing candidate profiles. */
 
     registerUser = (event) => {
         event.preventDefault();
