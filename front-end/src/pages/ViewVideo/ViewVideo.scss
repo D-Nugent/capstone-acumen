@@ -136,7 +136,7 @@
         display: flex;
         align-items: center;
         padding: 4px 0;
-        margin: 12px 0;
+        margin: 8px 0;
         
         &-number{
           margin: 0 16px 0 0;
@@ -155,6 +155,9 @@
           font-size: .75rem;
           width: 69%;
         }
+        &-bookmark{
+          font-size: .75rem;
+        }
         &:hover{
           cursor: pointer;
         }
@@ -162,6 +165,72 @@
         &:hover p{
           color: $themeSlateContrastTertiary;
           font-weight: 600;
+        }
+      }
+      &-share{
+        &-heading{
+          color: $themeSlateContrastTertiary;
+          margin: 16px 0 8px;
+        }
+        &-desc{
+          font-size: .875rem;
+          margin: 0;
+        }
+        &-qr{
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+          margin: 8px 0;
+
+          &-code{
+            height: 96px;
+            width: 96px;
+            background-color: $themeSlateSecondary;
+          }
+          &-buttons{
+            display: flex;
+            flex-direction: column;
+            
+            &-copy{
+              background-color: $themeSlateContrastTertiary;
+              border-radius: 24px;
+              color: #FFF;
+              font-weight: 600;
+              padding: 4px 4px;
+              border: none;
+              box-shadow: 4px 4px 8px $themeSlatePrimary;
+              font-size: .8125rem;
+
+              &:hover{
+                cursor: pointer;
+              }
+              &:active{
+                transform: translateY(4px);
+                box-shadow: 2px 0 4px $themeSlatePrimary;
+                outline: none;
+              }
+            }
+            &-email{
+              background-color: #FFF;
+              border-radius: 24px;
+              color: $themeSlateContrastTertiary;
+              font-weight: 600;
+              padding: 4px 4px;
+              border: none;
+              box-shadow: 4px 4px 8px $themeSlatePrimary;
+              text-decoration: none;
+              font-size: .8125rem;
+              display: flex;
+              justify-content: center;
+              margin-top: 16px;
+
+              &:active{
+                transform: translateY(4px);
+                box-shadow: 2px 0 4px $themeSlatePrimary;
+                outline: none;
+              }
+            }
+          }
         }
       }
     }

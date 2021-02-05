@@ -13,7 +13,7 @@ import './NewVideo.scss';
 // #ToDo - Add functionality to choose input devices
 // #ToDo - Add limitations for no. of questions and video length based on account type
 
-export default function NewVideo () {
+export default function NewVideo (props) {
   const [productionStage, setProductionState] = useState("launch")
   const {user, dataLoad} = useContext(firebaseContext);
   
@@ -23,7 +23,7 @@ export default function NewVideo () {
         <div className="newvideo__overview-border"></div>
         <h2 className="newvideo__overview-heading">Upload Your Digital Resume</h2>
       </div>
-      {productionStage!=="launch"&&<Studio/>}
+      {productionStage!=="launch"&&<Studio routeProps={props}/>}
       {productionStage==="launch"&&
       <div className="launch">
         {dataLoad.userData.userUploads.init===false&&

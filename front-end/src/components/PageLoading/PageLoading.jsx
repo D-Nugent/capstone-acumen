@@ -5,7 +5,7 @@ import './PageLoading.scss';
 export default function PageLoading() {
     return (
         <div className="loading">
-            <h2 className="loading__text">I'm Loading...honest...</h2>
+            <h2 className="loading__text">I'm loading...honest...</h2>
             <div className="loading__animation"></div>
       </div>
     )

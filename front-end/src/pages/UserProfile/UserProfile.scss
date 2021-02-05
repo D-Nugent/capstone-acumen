@@ -364,11 +364,23 @@
                             position: absolute;
                             top: 6px;
                             right: 12px;
+                            display: flex;
+                            flex-direction: column;
 
                             &-value{
                                 margin: 0;
                                 font-size: .875rem;
                                 color: $themeSlateSecondary;
+
+                                &.--delete{
+                                    position: absolute;
+                                    bottom: 6px;
+                                    right: 12px;
+                                    display: flex;
+                                    align-items: center;
+                                    color: $themeSlateContrastTertiary;
+                                    font-weight: 600;
+                                }
                             }
                         }
                     }

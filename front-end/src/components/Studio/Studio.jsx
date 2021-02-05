@@ -16,7 +16,7 @@ import saveIcon from '../../assets/icons/save.svg';
 import './Studio.scss'
 import VideoCountdown from '../VideoCountdown/VideoCountdown';
 
-function Studio() {
+function Studio(props) {
   const [videoData, setVideoData] = useState({
     videoTitle: "",
     videoId: null,
@@ -26,7 +26,7 @@ function Studio() {
   });
   const currentQuestions = useRef();
   currentQuestions.current = videoData.videoQuestions;
-  const {user, dataLoad} = useContext(firebaseContext);
+  const {user, dataLoad, dataUpdate} = useContext(firebaseContext);
   const [interviewStage,setInterviewStage] = useState("setup");
   const [titleEdit,setTitleEdit] = useState(false);
   const [recording, setRecording] = useState(false);
@@ -83,6 +83,8 @@ function Studio() {
       contentType: 'video/mp4'
     }
     const uploadVideoRef = videoRef.child(user.uid).child(`${videoId} - ${videoData.videoTitle}.mp4`)
+    /* #ToDo - Change ref so that each user has a video id folder and then the title is the filename
+    this will make it easier for deleting and future adjustments*/
     const uploadTask = uploadVideoRef.put(blob,metadata)
     uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,(snapshot) => {
       const progress = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
@@ -111,12 +113,29 @@ function Studio() {
               videoEndTime: videoEndTime,
               videoQuestions: currentQuestions.current
             },
-          )
-        })
+            )
+          })
+          viewUpload(videoId);
       });
     }
     )
   }
+
+  const viewUpload = (videoId) => {
+    setTimeout(() => {
+    fireDB.collection("usersTwo").doc(user.uid).get()
+    .then((doc)=>{
+      doc.exists?
+      dataUpdate(doc.data())
+      :
+      console.log("Document does not exist.");
+    }).then(()=>{
+        props.routeProps.history.push(`/user/${user.uid}/${videoId}`)  
+      }, 2000);
+    })
+  }
+
+console.log(props);
 
   const launchStudio = () => {
     console.log(videoData);
@@ -306,6 +325,14 @@ function Studio() {
           <div className="studio__container-recorder-wrapper">
           <video className="studio__container-recorder-wrapper-preview"autoPlay muted/>
           {showCounter===true && <VideoCountdown/>}
+          {uploadProgress>0&&
+          <div className="studio__container-upload-progress">
+            <label htmlFor="upload" className={`studio__container-upload-progress-label${uploadProgress===100?" --done":""}`}>
+              {uploadProgress===100?"Success!":"Video Uploading:"}
+            </label>
+            <progress id="upload" max="100" value={uploadProgress} className="studio__container-upload-progress-bar"></progress>
+          </div>
+          }
           </div>
           <div className={`studio__container-recorder-devices${interviewStage!=="setup"?" --disable":""}`}>
             <div className="studio__container-recorder-devices-camera">

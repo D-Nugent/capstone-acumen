@@ -1,16 +1,15 @@
 import React, { useState, useContext } from 'react';
 import {Link} from 'react-router-dom';
 import {firebaseContext} from '../../provider/FirebaseProvider';
-import { fireDB, imageRef } from '../../firebase';
+import { fireDB, imageRef, videoRef } from '../../firebase';
 import firebase from 'firebase/app';
-import {v4 as uuidv4} from 'uuid';
 import defaultProfileImage from '../../assets/icons/account_box.svg';
-import profileExample from '../../assets/images/profile-example.jpg';
 import mailIcon from '../../assets/icons/mail_outline.svg';
 import telIcon from '../../assets/icons/call.svg';
 import cameraIcon from '../../assets/icons/camera.svg';
 import memberIcon from '../../assets/icons/membership.svg';
 import addVideoIcon from '../../assets/icons/add_video.svg';
+import deleteIcon from '../../assets/icons/delete.svg';
 import './UserProfile.scss';
 
 // #ToDo - Consider adding another tab for 'Links' where users can add links to their GitHub, LinkedIn etc
@@ -174,8 +173,21 @@ function UserProfile() {
     reader.readAsDataURL(file)
   }
 
-  console.log(dataLoad);
-  console.log(user);
+  const deleteVideo = (event) => {
+    let deleteId = event.target.getAttribute("data-id");
+    let deleteTitle = event.target.getAttribute("data-title");
+    console.log(deleteId);
+    console.log(deleteTitle);
+    console.log("Deleting stuff");
+    fireDB.collection("usersTwo").doc(user.uid).update({
+      userUploads: dataLoad.userData.userUploads.filter(video => video.videoId !== deleteId),
+    }).then(()=> {
+      videoRef.child(user.uid).child(`${deleteId} - ${deleteTitle}.mp4`).delete()
+      .catch((error)=> {
+        console.error(error);
+      })
+    })
+  }
 
   const videoDurationCalc = (duration)=> {
     let seconds = Math.floor((duration / 1000) % 60),
@@ -345,7 +357,8 @@ function UserProfile() {
                   <>
                     {dataLoad.userData.userUploads.map(upload => {
                       return(
-                        <Link className="userprofile__container-content-uploads-stack-card" to={`/user/${user.uid}/${upload.videoId}`} key={upload.videoId}>
+                        // <Link className="userprofile__container-content-uploads-stack-card" to={`/user/${user.uid}/${upload.videoId}`} key={upload.videoId}>
+                        <Link className="userprofile__container-content-uploads-stack-card" to={`/user/${user.uid}/`} key={upload.videoId}>
                             <h4 className="userprofile__container-content-uploads-stack-card-title">{upload.title}</h4>
                             <div className="userprofile__container-content-uploads-stack-card-details">
                               <p className="userprofile__container-content-uploads-stack-card-details-value">
@@ -365,6 +378,12 @@ function UserProfile() {
                                 3
                               </p>
                             </div>
+                              <p className="userprofile__container-content-uploads-stack-card-details-value --delete"
+                                data-id={upload.videoId} data-title={upload.title} onClick={(event)=>{deleteVideo(event)}}>
+                                Delete:
+                                <img className="userprofile__container-content-uploads-icon"src={deleteIcon}
+                                data-id={upload.videoId} data-title={upload.title} alt="delete icon"/>
+                              </p>
                         </Link>
                       )
                     })}

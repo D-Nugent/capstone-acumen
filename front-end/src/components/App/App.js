@@ -21,22 +21,6 @@ import {firebaseContext} from '../../provider/FirebaseProvider';
 function App () {
   const {user, dataLoad} = useContext(firebaseContext);
 
-  // deleteData = () => {
-  //   fireDB.collection("usersTwo").doc("RYonaGAFP0EedOD2FoAc").update({
-  //     born: firebase.firestore.FieldValue.delete(),
-  //     first: firebase.firestore.FieldValue.delete(),
-  //     last: firebase.firestore.FieldValue.delete(),
-  //     "profile.aboutMe": firebase.firestore.FieldValue.delete(),
-  //     "profile.email": firebase.firestore.FieldValue.delete(),
-  //     profile: firebase.firestore.FieldValue.delete()
-  //   }).then(()=> {
-  //     fireDB.collection("usersTwo").doc("RYonaGAFP0EedOD2FoAc").delete().then(()=> {
-  //       console.log("It was deleted!");
-  //     }).catch((error)=> {
-  //       console.error(error);
-  //     })
-  //   })
-  // }
   /* #ToDo - Delete Data to be utilized in removing userVideo content*/
     return (
       <div className="app">
