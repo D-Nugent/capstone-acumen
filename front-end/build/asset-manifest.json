@@ -1,0 +1,39 @@
+{
+  "files": {
+    "main.css": "/static/css/main.dad8a82e.chunk.css",
+    "main.js": "/static/js/main.84046199.chunk.js",
+    "main.js.map": "/static/js/main.84046199.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.c8a7e92f.js",
+    "runtime-main.js.map": "/static/js/runtime-main.c8a7e92f.js.map",
+    "static/js/2.33a1e55b.chunk.js": "/static/js/2.33a1e55b.chunk.js",
+    "static/js/2.33a1e55b.chunk.js.map": "/static/js/2.33a1e55b.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.dad8a82e.chunk.css.map": "/static/css/main.dad8a82e.chunk.css.map",
+    "static/js/2.33a1e55b.chunk.js.LICENSE.txt": "/static/js/2.33a1e55b.chunk.js.LICENSE.txt",
+    "static/media/App.scss": "/static/media/ZillaSlab-SemiBold.96555be9.ttf",
+    "static/media/account_box.8ec2925b.svg": "/static/media/account_box.8ec2925b.svg",
+    "static/media/acumenLogoSmall.9b76cf38.svg": "/static/media/acumenLogoSmall.9b76cf38.svg",
+    "static/media/add1.99cc4580.svg": "/static/media/add1.99cc4580.svg",
+    "static/media/add_video.c20c765c.svg": "/static/media/add_video.c20c765c.svg",
+    "static/media/btn_google.3f75558a.svg": "/static/media/btn_google.3f75558a.svg",
+    "static/media/btn_linkedIn.b61c5102.svg": "/static/media/btn_linkedIn.b61c5102.svg",
+    "static/media/call.ccc72ead.svg": "/static/media/call.ccc72ead.svg",
+    "static/media/camera.b06c0d50.svg": "/static/media/camera.b06c0d50.svg",
+    "static/media/chevron_right.9318cfea.svg": "/static/media/chevron_right.9318cfea.svg",
+    "static/media/delete.affe7b17.svg": "/static/media/delete.affe7b17.svg",
+    "static/media/edit.ab5b2757.svg": "/static/media/edit.ab5b2757.svg",
+    "static/media/mail_outline.a6e4bf03.svg": "/static/media/mail_outline.a6e4bf03.svg",
+    "static/media/membership.d44ba16c.svg": "/static/media/membership.d44ba16c.svg",
+    "static/media/record.775a1090.svg": "/static/media/record.775a1090.svg",
+    "static/media/save.00cbedc4.svg": "/static/media/save.00cbedc4.svg",
+    "static/media/stop.274efa54.svg": "/static/media/stop.274efa54.svg",
+    "static/media/visibility.e90070a7.svg": "/static/media/visibility.e90070a7.svg",
+    "static/media/visibility_off.e9743c53.svg": "/static/media/visibility_off.e9743c53.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.c8a7e92f.js",
+    "static/js/2.33a1e55b.chunk.js",
+    "static/css/main.dad8a82e.chunk.css",
+    "static/js/main.84046199.chunk.js"
+  ]
+}
