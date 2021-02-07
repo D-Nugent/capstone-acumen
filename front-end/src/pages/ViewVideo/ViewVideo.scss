@@ -183,9 +183,10 @@
           margin: 8px 0;
 
           &-code{
-            height: 96px;
-            width: 96px;
             background-color: $themeSlateSecondary;
+          }
+          &-image{
+            width: 96px;
           }
           &-buttons{
             display: flex;

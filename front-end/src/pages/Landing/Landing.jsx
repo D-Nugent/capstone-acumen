@@ -30,7 +30,7 @@ console.log(dataLoad);
                     </h2>
                     <h2 className="landing__container-details-desc-reverse">
                         noun: acumen - <span className="landing__emph">the future of recruitment, a modernisation of the paper resume
-                        to an immersive digital video interview.</span>
+                        to an immersive video interview.</span>
                     </h2>
                     <Link to="/how" className="landing__container-details-learn">
                         Learn More
