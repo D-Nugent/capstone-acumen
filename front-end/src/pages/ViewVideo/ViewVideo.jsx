@@ -1,13 +1,15 @@
 import React, { Component, useContext, useState, useEffect } from 'react';
 import QRCode from 'qrcode';
+import QrCodeWithLogo from "qrcode-with-logos";
 import ClipboardJS from 'clipboard';
 import {videoRef,imageRef} from '../../firebase';
 import {fireDB, fireAuth} from '../../firebase';
 import firebase from 'firebase/app';
 import {firebaseContext} from '../../provider/FirebaseProvider';
 import ProductionNav from '../../components/ProductionNav/ProductionNav';
-import './ViewVideo.scss'
 import PageLoading from '../../components/PageLoading/PageLoading';
+import acumenLogo from '../../assets/logos/acumenLogoSmall.svg';
+import './ViewVideo.scss'
 
 function ViewVideo (props) {
     const {user, dataLoad, dataUpdate} = useContext(firebaseContext);
@@ -46,10 +48,31 @@ function ViewVideo (props) {
     /* #ToDo - Review potential of having Bookmarks in fullscreen mode.*/
 
     const activateQR = () => {
-      const container = document.querySelector('.viewvideo__main-questions-share-qr-code');
-      QRCode.toCanvas(container,window.location.href,{width: 96, height: 96 },function (err) {
-        if (err) throw err
-      })
+
+      let qrcode = new QrCodeWithLogo({
+        canvas: document.querySelector('.viewvideo__main-questions-share-qr-code'),
+        content: window.location.href,
+        width: 96,
+        logo: {
+          src: acumenLogo,
+          logoSize: .6,
+          borderRadius: 24,
+          borderColor: "#FFFFFF00",
+        }
+      }).toCanvas().then(()=>{})
+
+      let qrcodealt2 = new QrCodeWithLogo({
+        canvas: document.querySelector('.viewvideo__main-questions-share-qr-code-alt2'),
+        content: window.location.href,
+        width: 96,
+        logo: {
+          src: acumenLogo,
+          logoSize: .20,
+          borderRadius: 0,
+          borderColor: "#FFFFFF",
+        }
+      }).toCanvas().then(()=>{})
+
     }
 
     useEffect(() => {
@@ -169,7 +192,8 @@ function ViewVideo (props) {
               Easily share this candidate by copying the below QR code and/or link anywhere you like!
             </p>
             <div className="viewvideo__main-questions-share-qr">
-              <canvas className="viewvideo__main-questions-share-qr-code" onLoad={()=>{activateQR()}} href={window.location.href}></canvas>
+              <canvas className="viewvideo__main-questions-share-qr-code" onLoad={()=>{activateQR()}}></canvas>
+              <canvas className="viewvideo__main-questions-share-qr-code-alt2" onLoad={()=>{activateQR()}}></canvas>
               <div className="viewvideo__main-questions-share-qr-buttons">
                 <button data-clipboard-text={window.location.href} className="viewvideo__main-questions-share-qr-buttons-copy">
                   Copy Digital Resume Link

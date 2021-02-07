@@ -80,7 +80,6 @@ function UserProfile() {
           })
         })
       }
-      /* #ToDo - Need to fix concat AGAIN*/
       let experienceArray = [profileData.experienceOne,profileData.experienceTwo,profileData.experienceThree];
       fireDB.collection("usersTwo").doc(user.uid).update({
         firstName: profileData.firstName,
@@ -357,8 +356,8 @@ function UserProfile() {
                   <>
                     {dataLoad.userData.userUploads.map(upload => {
                       return(
-                        // <Link className="userprofile__container-content-uploads-stack-card" to={`/user/${user.uid}/${upload.videoId}`} key={upload.videoId}>
-                        <Link className="userprofile__container-content-uploads-stack-card" to={`/user/${user.uid}/`} key={upload.videoId}>
+                        /* #ToDo - Add Delete functionality to cards*/
+                        <Link className="userprofile__container-content-uploads-stack-card" to={`/user/${user.uid}/${upload.videoId}`} key={upload.videoId}>
                             <h4 className="userprofile__container-content-uploads-stack-card-title">{upload.title}</h4>
                             <div className="userprofile__container-content-uploads-stack-card-details">
                               <p className="userprofile__container-content-uploads-stack-card-details-value">
