@@ -1,10 +1,10 @@
 import React, {useState, useContext, useEffect, useRef} from 'react';
-import {videoRef,imageRef} from '../../firebase';
+import {videoRef} from '../../firebase';
 import {fireDB} from '../../firebase';
 import firebase from 'firebase/app';
 import {firebaseContext} from '../../provider/FirebaseProvider';
 import {v4 as uuidv4} from 'uuid';
-import {Link, useHistory} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import ProductionNav from '../../components/ProductionNav/ProductionNav';
 import addIcon from '../../assets/icons/add1.svg';
 // import addIconFocus from '../../assets/icons/add2.svg';
@@ -57,7 +57,9 @@ function Studio(props) {
   }, [])
 
   const getUserDevices = async () => {
+    await navigator.mediaDevices.getUserMedia({audio: true, video: true});
     const devices = await navigator.mediaDevices.enumerateDevices();
+    console.log(devices);
     const videoDevices = devices.filter(device => device.kind === 'videoinput');
     const micDevices = devices.filter(device => device.kind === 'audioinput');
     const vidOptions = videoDevices.map(videoDevice => {
@@ -88,21 +90,19 @@ function Studio(props) {
     const uploadTask = uploadVideoRef.put(blob,metadata)
     uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,(snapshot) => {
       const progress = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
-      console.log(`Upload is ${progress}% done`);
       setUploadProgress(progress)
       switch (snapshot.state) {
         case firebase.storage.TaskState.PAUSED:
-          console.log('Upload is paused');
+          alert('Upload is paused');
           break;
         case firebase.storage.TaskState.RUNNING:
-          console.log('Upload is running');
           break;
+        default:
       }
     }, function(error) {
-      console.error(error);
+      alert(error);
     }, function() {
       uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL){
-        console.log(`File available at ${downloadURL}`);
         fireDB.collection("usersTwo").doc(user.uid).update({
           userUploads: firebase.firestore.FieldValue.arrayUnion(
             {
@@ -128,17 +128,14 @@ function Studio(props) {
       doc.exists?
       dataUpdate(doc.data())
       :
-      console.log("Document does not exist.");
+      alert("Error getting data.");
     }).then(()=>{
         props.routeProps.history.push(`/user/${user.uid}/${videoId}`)  
       }, 2000);
     })
   }
 
-console.log(props);
-
   const launchStudio = () => {
-    console.log(videoData);
     setInterviewStage("record");
     navigator.mediaDevices.getUserMedia(constraintObj)
     .then(function(mediaStreamObj) {
@@ -155,7 +152,6 @@ console.log(props);
       let end = document.querySelector('.studio__container-recorder-init-end')
       let mediaRecorder = new MediaRecorder(mediaStreamObj);
       let chunks = [];
-      console.log(mediaRecorder.state);
       let videoId = uuidv4();
       let videoInitTime;
       let videoEndTime;
@@ -168,8 +164,6 @@ console.log(props);
           setRecording(true);
         }, 4000);
       end.addEventListener('click', () => {
-        console.log(mediaRecorder.state);
-        console.log("Start Media Ran");
         mediaRecorder.stop();
         videoEndTime = Date.now();
         setRecording(false);
@@ -187,13 +181,11 @@ console.log(props);
       mediaRecorder.onstop = ()=>{
         let blob = new Blob(chunks, {'type':'video/mp4;'});
         chunks = [];
-        let videoURL = window.URL.createObjectURL(blob);
-        console.log(videoURL);
         uploadVideoBlob(blob, videoId, videoInitTime, videoEndTime);
       };
     })
     .catch(function(err) {
-      console.log(err.name, err.message);
+      alert(err.name, err.message);
     })
   }
 
@@ -215,7 +207,6 @@ console.log(props);
     })
     event.currentTarget.classList.add("--inactive");
     event.currentTarget.nextSibling && event.currentTarget.nextSibling.classList.remove("--inactive");
-    console.log(videoData.videoInitTime);
   }
 
   const addQuestion = () => {
@@ -315,8 +306,6 @@ console.log(props);
     });
   }
 
-  console.log(dataLoad.userData);
-  console.log(videoData);
   return (
     <div className="studio">
       <div className="studio__container">

@@ -1,15 +1,11 @@
-import React, { Component, useState, useContext } from 'react';
+import React from 'react';
 import {Link} from 'react-router-dom';
 import './Landing.scss';
-import {firebaseContext} from '../../provider/FirebaseProvider';
 import acumenLogo from '../../assets/logos/acumenLogoSmall.svg';
 import chevron from '../../assets/icons/chevron_right.svg';
 
 
 function Landing () {
-const {user,dataLoad} = useContext(firebaseContext);
-
-console.log(dataLoad);
     return (
         <div className="landing">
             <div className="landing__container">

@@ -1,9 +1,6 @@
-import React, { Component, useContext, useState } from 'react';
 import './About.scss';
-import {firebaseContext} from '../../provider/FirebaseProvider';
 
 function About () {
-const {user, dataLoad} = useContext(firebaseContext);
 
     return (
         <div className="about">

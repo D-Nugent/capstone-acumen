@@ -8,12 +8,9 @@ export default function VideoCountdown() {
         value:"",
     })
 
+    
+    useEffect(() => {
     var count = 5;
-
-useEffect(() => {
-    runCount();
-}, [])
-
     function runCount() {
         if (count > 0) {
             count--;
@@ -50,6 +47,9 @@ useEffect(() => {
             return
         }
     }
+    runCount();
+}, [])
+
 
     return (
         <div className="countdown">

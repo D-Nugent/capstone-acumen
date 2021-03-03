@@ -19,7 +19,7 @@ import './UserProfile.scss';
 //then when Save is clicked, values from state values willuse fireDB to update database (remember merge)
 
 function UserProfile() {
-  const {user, dataLoad,dataUpdate, updateEmailAddress} = useContext(firebaseContext);
+  const {user, dataLoad,dataUpdate} = useContext(firebaseContext);
   const [profileDetail, setProfileDetail] = useState("about");
   const [editMode, setEditMode] = useState(false);
   const [photoUpload, setPhotoUpload] = useState({
@@ -68,6 +68,8 @@ function UserProfile() {
             case firebase.storage.TaskState.RUNNING:
               console.log('Upload is running');
               break;
+            default:
+              console.log('Upload complete');
           }
         }, function(error) {
           console.error(error);
@@ -308,6 +310,7 @@ function UserProfile() {
                       </div>
                     )
                   }
+                  return null
                 })
                 :
                   <p className="userprofile__container-content-wrapper-detail-construction">

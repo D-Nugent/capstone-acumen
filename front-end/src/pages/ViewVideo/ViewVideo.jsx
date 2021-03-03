@@ -1,10 +1,6 @@
-import React, { Component, useContext, useState, useEffect } from 'react';
-import QRCode from 'qrcode';
+import React, {useContext, useState, useEffect } from 'react';
 import QrCodeWithLogo from "qrcode-with-logos";
 import ClipboardJS from 'clipboard';
-import {videoRef,imageRef} from '../../firebase';
-import {fireDB, fireAuth} from '../../firebase';
-import firebase from 'firebase/app';
 import {firebaseContext} from '../../provider/FirebaseProvider';
 import ProductionNav from '../../components/ProductionNav/ProductionNav';
 import PageLoading from '../../components/PageLoading/PageLoading';
@@ -12,24 +8,24 @@ import acumenLogo from '../../assets/logos/acumenLogoSmall.svg';
 import './ViewVideo.scss'
 
 function ViewVideo (props) {
-    const {user, dataLoad, dataUpdate} = useContext(firebaseContext);
-    const [interviewStage,setInterviewStage] = useState("review");
+    const {user, dataLoad} = useContext(firebaseContext);
+    const [interviewStage] = useState("review");
     const [bookmarkDetails, setBookmarkDetails] = useState(null);
     const [fullscreen, setFullscreen] = useState(false);
     const [playStatus, setPlayStatus] = useState(false);
-    const [selectedUser, setSelectedUser] = useState({
-      user: null,
-      selectedVideo: [],
-      loaded: false
+    const [selectedUser] = useState({
+      user: dataLoad.userData,
+      selectedVideo: dataLoad.userData.userUploads.filter(video => video.videoId===props.match.params.videoid).shift(),
+      loaded: true,
     })
     
-    useEffect(() => {
-      setSelectedUser({
-        user: dataLoad.userData,
-        selectedVideo: dataLoad.userData.userUploads.filter(video => video.videoId===props.match.params.videoid).shift(),
-        loaded: true,
-      })
-    }, [])
+    // useEffect(() => {
+    //   setSelectedUser({
+    //     user: dataLoad.userData,
+    //     selectedVideo: dataLoad.userData.userUploads.filter(video => video.videoId===props.match.params.videoid).shift(),
+    //     loaded: true,
+    //   })
+    // }, [])
 
     useEffect(() => {
       function check() {
@@ -49,7 +45,7 @@ function ViewVideo (props) {
 
     const activateQR = () => {
 
-      let qrcode = new QrCodeWithLogo({
+      new QrCodeWithLogo({
         canvas: document.querySelector('.viewvideo__main-questions-share-qr-code'),
         content: window.location.href,
         width: 96,
@@ -61,7 +57,7 @@ function ViewVideo (props) {
         }
       }).toCanvas().then(()=>{})
 
-      let qrcodealt2 = new QrCodeWithLogo({
+      new QrCodeWithLogo({
         canvas: document.querySelector('.viewvideo__main-questions-share-qr-code-alt2'),
         content: window.location.href,
         width: 96,

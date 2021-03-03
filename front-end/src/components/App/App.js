@@ -19,7 +19,7 @@ import {firebaseContext} from '../../provider/FirebaseProvider';
 
 
 function App () {
-  const {user, dataLoad} = useContext(firebaseContext);
+  const {dataLoad} = useContext(firebaseContext);
 
   /* #ToDo - Delete Data to be utilized in removing userVideo content*/
     return (

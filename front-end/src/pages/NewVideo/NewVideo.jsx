@@ -1,8 +1,5 @@
 import React, {useState, useContext} from 'react';
 import {Link} from 'react-router-dom';
-import {videoRef,imageRef} from '../../firebase';
-import {fireDB} from '../../firebase';
-import firebase from 'firebase/app';
 import acumenLogo from '../../assets/logos/acumenLogoSmall.svg';
 import {firebaseContext} from '../../provider/FirebaseProvider';
 import Studio from '../../components/Studio/Studio';
@@ -15,7 +12,7 @@ import './NewVideo.scss';
 
 export default function NewVideo (props) {
   const [productionStage, setProductionState] = useState("launch")
-  const {user, dataLoad} = useContext(firebaseContext);
+  const {dataLoad} = useContext(firebaseContext);
   
   return (
     <div className="newvideo">

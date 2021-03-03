@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {fireAuth, fireDB, fireAuthGoogle, fireAuthLinkedIn} from '../../firebase';
+import {fireAuth, fireDB, fireAuthGoogle} from '../../firebase';
 import firebase from 'firebase/app';
 import ActionClose from '../ActionClose/ActionClose';
 import googleIcon from '../../assets/icons/btn_google.svg';
@@ -22,7 +22,6 @@ export class SignInModal extends Component {
         const userPass = event.target.passRef.value;
         fireAuth.signInWithEmailAndPassword(userEmail, userPass)
         .then((userCredential) => {
-            const user = userCredential.user
             console.log("Successful Sign In");
             this.props.loginModalClose(userCredential.additionalUserInfo.isNewUser)
         })
@@ -36,8 +35,8 @@ export class SignInModal extends Component {
     loginGoogle = () => {
         fireAuth.signInWithPopup(fireAuthGoogle)
         .then((result) => {
-            const credential = result.credential;
-            const token = credential.accessToken;
+            // const credential = result.credential;
+            // const token = credential.accessToken;
             const user = result.user;
             const addInfo = result.additionalUserInfo;
             addInfo.isNewUser === true &&
